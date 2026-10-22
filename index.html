@@ -1,0 +1,1541 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<!-- flow-rebuild template (Growth Audit, v3: + walkthrough video, phone view/QR, localization, paywall today vs proposed). Replace every double-brace placeholder, everything between
+     the SCREENS markers, and the CONTENT json. Rules that brand-check.py enforces are marked RULE.
+     Reference builds: eddieatadapty.github.io/datacamp-flow-rebuild-v2 · bterzic123.github.io/planner5d-flow-rebuild-v2 -->
+<title>Pocket FM Growth Audit</title>
+<meta name="description" content="Five ideas to turn more new Pocket FM listeners into first-time coin buyers, each built into a clickable version of Pocket FM's own screens. Prepared by Adapty.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- the APP's font (brand.json fonts, or the closest Google family) + a mono if the app shows code -->
+<link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700&family=Share+Tech&display=swap" rel="stylesheet">
+<style>
+/* BRAND:START — the only place the APP's colours are written as literals. RULE: every value here is
+   copied from brand.json / a sampled pixel of the app's own screens; never "improved". Used only inside the phone. */
+:root{
+  --b-primary:#e5194b;      /* Buy now / Know more red, their unlock sheet */
+  --b-primary-ink:#ffffff;
+  --b-bg:#090909;           /* store background, live iOS store */
+  --b-surface:#1b1b1b;      /* Trial Pack card */
+  --b-ink:#fcfcfc;
+  --b-ink2:#7b7b7b;         /* tab labels, secondary */
+  --b-line:#1c1c1c;         /* tab bar border, dotted row lines */
+  --b-accent2:#02fdaa;      /* Trial Pack tag green */
+  --b-grad:linear-gradient(90deg,#c389fd,#db325b); /* active tab / Episodes underline */
+  --b-radius:10px;
+  --b-pill:999px;
+  --b-font:'Albert Sans',-apple-system,system-ui,sans-serif;
+  --b-mono:'Share Tech','Albert Sans',sans-serif;
+  --b-fill:#333333;         /* filled pill (Trial Pack, ad packs) */
+  --b-outline:#898989;      /* outlined price pill */
+  --b-tag:#1d1d1d; --b-tagink:#bbbbbb;   /* grey pack tag */
+  --b-free:#ecefbc;         /* "+N Free coins" */
+  --b-purple:#48004d; --b-purpleink:#febafe;  /* ad-pack bonus tag */
+  --b-pink:#fdc1cc; --b-pinkink:#eabcdb; --b-glow:#642031; --b-glow2:#431342; /* active STORE tab */
+  --b-sheet:#15151e; --b-card3:#232631; --b-line3:#30313a; --b-radio:#595a63; /* unlock sheet */
+  --b-ytag:#2b2301; --b-yink:#ccb44b; --b-yink2:#d3bc4b; --b-ink3:#82848b; --b-ink4:#a1a4ab; --b-x:#e2e5e6;
+  --b-time:#f9303e; --b-pl:#242424; --b-peek:#1a1a1a; --b-grab:#535353; --b-lilac:#c389fd; --b-dur:#646464; --b-dlline:#2b2b2b; /* player */
+}
+/* BRAND:END */
+/* A second app family (e.g. a mono for code) is applied HERE, never in SCREENS css (brand-check allows only
+   var(--b-font) there). Prefix with .scr so it beats the screens' font shorthands, e.g.:
+   .scr .code,.scr .instr code{font-family:var(--b-mono)} */
+.scr .stg,.scr .scbl,.scr .srate,.scr .tbi span,.scr .hkick,.scr .hmeta,.scr .hrow small,.scr .ptm,.scr .ptab,.scr .pwh b,.scr .per small,.scr .ppi,.scr .nxr small{font-family:var(--b-mono)}
+
+/* ================= the audit page — Adapty's, not the app's. Light, Apple-style. ================= */
+:root{
+  color-scheme:light;
+  --st-ground:#f5f5f7; --st-card:#ffffff; --st-ink:#1d1d1f; --st-ink2:#6e6e73; --st-ink3:#86868b;
+  --st-hair:rgba(0,0,0,.09); --st-link:#0066cc;
+  --st-accent:#2d0612;      /* dark brand colour of the APP: buttons, the outcome band */
+  --st-hi:#ff3e4c;          /* bright brand colour of the APP: outcome numbers on the band, idea dots */
+  --st-mark:rgba(255,62,76,.38); /* --st-hi at ~.5 alpha: the highlighter under impact numbers */
+  --st-font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:64px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+html,body{margin:0}
+body{background:var(--st-ground);color:var(--st-ink);font-family:var(--st-font);-webkit-font-smoothing:antialiased;font-size:17px;line-height:1.47}
+.au-wrap{max-width:1080px;margin:0 auto;padding-inline:22px}
+a{color:var(--st-link)}
+button{font-family:inherit}
+:focus-visible{outline:2px solid var(--st-link);outline-offset:3px;border-radius:6px}
+mark{background:linear-gradient(transparent 62%,var(--st-mark) 62%,var(--st-mark) 92%,transparent 92%);color:inherit;padding:0 .04em}
+
+/* nav */
+.au-nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:rgba(245,245,247,.8);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid var(--st-hair)}
+.au-nav-in{max-width:1080px;margin:0 auto;padding-inline:22px;height:52px;display:flex;align-items:center;gap:26px}
+.au-brand{display:flex;align-items:center;gap:10px;margin-right:auto;min-width:0}
+.au-brand img{width:26px;height:26px;border-radius:7px;flex:none}
+.au-brand span{font-size:15px;font-weight:600;letter-spacing:-.01em;white-space:nowrap}
+.au-brand small{font-size:15px;font-weight:400;color:var(--st-ink2)}
+.au-nav a{font-size:13px;color:var(--st-ink);text-decoration:none;opacity:.82}
+.au-nav a:hover{opacity:1}
+@media (max-width:560px){.au-nav a.au-opt{display:none}.au-brand small{display:none}}
+
+/* hero */
+.au-top-hero{text-align:center;padding-top:clamp(56px,9vw,96px);overflow:hidden;position:relative}
+.au-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:600;color:var(--st-ink);margin:0 0 14px}
+.au-eyebrow i{width:8px;height:8px;border-radius:50%;background:var(--st-hi);box-shadow:0 0 0 3px var(--st-mark)}
+.au-display{font-size:clamp(60px,12vw,120px);line-height:.98;font-weight:700;letter-spacing:-.05em;margin:0}
+.au-lede{font-size:clamp(23px,3.4vw,34px);line-height:1.16;font-weight:600;letter-spacing:-.022em;max-width:760px;margin:22px auto 0;text-wrap:balance}
+.au-lede span{color:var(--st-ink2)}
+.au-byline{font-size:14px;color:var(--st-ink3);margin:18px 0 0}
+.au-ctas{display:flex;gap:26px;justify-content:center;align-items:center;margin-top:30px;flex-wrap:wrap}
+.au-btn{display:inline-block;background:var(--st-accent);color:#fff;border-radius:980px;padding:12px 23px;font-size:17px;font-weight:500;text-decoration:none;border:0;cursor:pointer}
+.au-btn:hover{filter:brightness(1.25)}
+.au-lnk{background:none;border:0;padding:0;color:var(--st-link);font-size:17px;text-decoration:none;cursor:pointer}
+.au-lnk::after{content:"\00a0›"}
+.au-lnk:hover{text-decoration:underline}
+.au-phones{display:flex;justify-content:center;align-items:flex-start;margin-top:clamp(40px,6vw,64px);height:clamp(300px,52vw,560px)}
+.au-hp{flex:none;border:0;padding:0;background:none;cursor:pointer;width:27%;max-width:290px;margin:0 -2.5%;transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+.au-hp img{display:block;width:100%;height:auto;filter:drop-shadow(0 28px 50px rgba(0,0,0,.2))}
+.au-hp.au-c{width:31%;max-width:330px;z-index:2}
+.au-hp.au-l{transform:translateY(12%) rotate(-5deg)}
+.au-hp.au-r{transform:translateY(12%) rotate(5deg)}
+.au-hp.au-l:hover{transform:translateY(9%) rotate(-5deg)}.au-hp.au-r:hover{transform:translateY(9%) rotate(5deg)}.au-hp.au-c:hover{transform:translateY(-3%)}
+
+/* sections */
+.au-sec{padding-block:clamp(72px,10vw,120px)}
+.au-sec.au-white{background:var(--st-card)}
+.au-kicker{font-size:15px;font-weight:600;color:var(--st-ink2);margin:0 0 12px}
+.au-h2{font-size:clamp(34px,5.2vw,56px);line-height:1.06;font-weight:700;letter-spacing:-.035em;margin:0;text-wrap:balance}
+.au-h2 span{color:var(--st-ink3)}
+.au-split{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(28px,6vw,80px);align-items:end}
+.au-split p{margin:0;font-size:clamp(17px,1.7vw,21px);line-height:1.45;color:var(--st-ink2);letter-spacing:-.01em}
+.au-split p b{color:var(--st-ink);font-weight:600}
+.au-split p + p{margin-top:16px}
+.au-stats{display:grid;grid-template-columns:repeat(3,1fr);margin-top:clamp(48px,7vw,80px);border-top:1px solid var(--st-hair)}
+.au-stat{padding:28px 20px 0 0}
+.au-stat b{display:block;font-size:clamp(40px,5.5vw,64px);font-weight:700;letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums}
+.au-stat span{display:block;font-size:15px;color:var(--st-ink2);margin-top:10px;max-width:22ch}
+.au-notes{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(20px,3vw,40px);margin-top:clamp(48px,7vw,72px)}
+.au-note h3{font-size:19px;font-weight:600;letter-spacing:-.015em;margin:0 0 8px}
+.au-note p{margin:0;font-size:15.5px;line-height:1.5;color:var(--st-ink2)}
+.au-note .au-ic{width:36px;height:36px;border-radius:10px;background:var(--st-ground);display:grid;place-items:center;margin-bottom:16px}
+.au-note .au-ic svg{width:19px;height:19px;stroke:var(--st-accent);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* ideas */
+.au-ideas-h{margin-bottom:clamp(32px,5vw,48px)}
+.au-list{background:var(--st-card);border-radius:28px;padding-inline:clamp(20px,4vw,44px)}
+.au-idea{display:grid;grid-template-columns:56px 1fr 220px;gap:20px;align-items:start;padding-block:clamp(26px,3.5vw,36px);border-top:1px solid var(--st-hair)}
+.au-idea:first-child{border-top:0}
+.au-idea .au-num{font-size:15px;font-weight:600;color:var(--st-ink3);font-variant-numeric:tabular-nums;padding-top:6px}
+.au-idea h3{font-size:clamp(21px,2.4vw,26px);line-height:1.2;font-weight:600;letter-spacing:-.022em;margin:0 0 8px}
+.au-idea p{margin:0 0 12px;font-size:17px;line-height:1.5;color:var(--st-ink2);max-width:58ch}
+.au-idea p code{font:600 15px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--st-ink);background:var(--st-ground);padding:2px 7px;border-radius:6px}
+.au-idea .au-lnk{font-size:15px}
+.au-imp{text-align:right}
+.au-imp .au-v{font-size:clamp(30px,3.6vw,40px);font-weight:700;letter-spacing:-.035em;line-height:1;font-variant-numeric:tabular-nums;color:var(--st-accent)}
+.au-imp .au-l{font-size:13.5px;color:var(--st-ink2);margin-top:8px}
+.au-band{margin-top:20px;background:var(--st-accent);color:#fff;border-radius:28px;padding:clamp(32px,5vw,56px);display:grid;grid-template-columns:1fr auto;gap:clamp(28px,5vw,64px);align-items:center}
+.au-band .au-k{font-size:15px;font-weight:600;color:rgba(255,255,255,.62);margin:0 0 10px}
+.au-band h3{font-size:clamp(24px,3vw,32px);line-height:1.18;font-weight:600;letter-spacing:-.022em;margin:0;text-wrap:balance}
+.au-band .au-fn{font-size:13px;line-height:1.5;color:rgba(255,255,255,.55);margin:16px 0 0;max-width:52ch}
+.au-nums{display:flex;gap:clamp(28px,4vw,48px)}
+.au-nums small{display:block;font-size:13px;color:rgba(255,255,255,.62)}
+.au-nums b{display:block;font-size:clamp(48px,6.5vw,76px);font-weight:700;letter-spacing:-.045em;line-height:1;color:var(--st-hi);font-variant-numeric:tabular-nums;margin:4px 0 8px}
+.au-nums span{font-size:14px;color:rgba(255,255,255,.8)}
+.au-band .au-btn{background:var(--st-hi);color:var(--st-accent);font-weight:600;margin-top:26px}
+
+/* prototype */
+.au-proto-h{text-align:center;max-width:720px;margin:0 auto}
+.au-proto-h p{font-size:clamp(17px,1.7vw,21px);color:var(--st-ink2);margin:14px 0 0}
+.au-seg{display:flex;gap:4px;justify-content:center;margin:clamp(28px,4vw,40px) auto 0;padding:4px;background:var(--st-ground);border-radius:980px;width:max-content;max-width:100%;overflow-x:auto;scrollbar-width:none}
+.au-seg::-webkit-scrollbar{display:none}
+.au-chip{flex:none;display:inline-flex;align-items:center;gap:6px;background:none;border:0;color:var(--st-ink2);font-size:13.5px;font-weight:500;padding:8px 14px;border-radius:980px;cursor:pointer;white-space:nowrap}
+.au-chip:hover{color:var(--st-ink)}
+.au-chip.on{background:var(--st-card);color:var(--st-ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.au-chip i{font-style:normal;font-size:11px;font-weight:700;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:var(--st-hi);color:var(--st-accent)}
+.au-stage{display:grid;grid-template-columns:auto minmax(0,420px);gap:clamp(32px,6vw,72px);justify-content:center;align-items:center;margin-top:clamp(28px,4vw,44px)}
+.phone{width:390px;height:844px;border-radius:56px;padding:10px;background:#0b0d10;box-shadow:0 0 0 1.5px #3a3d42,0 40px 90px rgba(0,0,0,.25);max-width:calc(100vw - 44px)}
+.phone-in{position:relative;width:100%;height:100%;border-radius:46px;overflow:hidden;background:var(--b-bg)}
+.island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:120px;height:34px;border-radius:20px;background:#000;z-index:9}
+.sbar{position:absolute;top:0;left:0;right:0;height:52px;display:flex;justify-content:space-between;align-items:center;padding:4px 32px 0;font:600 15px -apple-system,system-ui,sans-serif;color:var(--b-ink);z-index:8;pointer-events:none}
+.au-pn{background:var(--st-ground);border-radius:28px;padding:clamp(26px,3.5vw,38px)}
+.au-pn-k{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--st-ink)}
+.au-pn-k i{width:8px;height:8px;border-radius:50%;background:var(--st-hi);box-shadow:0 0 0 3px var(--st-mark)}
+.au-pn-k.au-ctx{color:var(--st-ink2)}.au-pn-k.au-ctx i{background:var(--st-ink3);box-shadow:none}
+.au-pn-t{font-size:clamp(24px,2.6vw,30px);line-height:1.12;font-weight:700;letter-spacing:-.028em;margin:10px 0 14px;text-wrap:balance}
+.au-pn-h{margin:0;font-size:17px;line-height:1.55;color:var(--st-ink2)}
+.au-pn-h b{color:var(--st-ink);font-weight:600}
+.au-pn-o{margin-top:24px;padding-top:22px;border-top:1px solid var(--st-hair)}
+.au-pn-o .au-lab{font-size:13px;font-weight:600;color:var(--st-ink3)}
+.au-pn-o .au-val{font-size:clamp(38px,4.4vw,50px);font-weight:700;letter-spacing:-.04em;line-height:1.05;color:var(--st-accent);margin-top:6px;font-variant-numeric:tabular-nums}
+.au-pn-o .au-sub{font-size:14px;color:var(--st-ink2);margin-top:4px}
+.au-pn-a{margin:18px 0 0;font-size:14px;line-height:1.5;color:var(--st-ink2)}
+.au-pn-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:28px;padding-top:18px;border-top:1px solid var(--st-hair);font-size:13px;color:var(--st-ink3)}
+.au-pn-nav button{background:var(--st-card);border:0;border-radius:980px;padding:8px 15px;font-size:14px;font-weight:500;color:var(--st-ink);cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.au-pn-nav button:disabled{opacity:.35;cursor:default}
+.au-hint{text-align:center;font-size:14px;color:var(--st-ink3);margin:22px 0 0}
+
+/* footer */
+.au-foot{padding-block:56px 72px;border-top:1px solid var(--st-hair)}
+.au-foot details{border-bottom:1px solid var(--st-hair);padding-bottom:18px}
+.au-foot summary{cursor:pointer;font-size:17px;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center}
+.au-foot summary::-webkit-details-marker{display:none}
+.au-foot summary::after{content:"+";font-size:24px;font-weight:300;color:var(--st-ink2)}
+.au-foot details[open] summary::after{content:"−"}
+.au-srcs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 48px;margin-top:18px}
+.au-srcs h4{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--st-ink3);margin:18px 0 6px}
+.au-srcs dl{margin:0}.au-srcs dt{font-size:14.5px;font-weight:600;margin-top:10px}
+.au-srcs dd{margin:3px 0 0;font-size:14px;line-height:1.5;color:var(--st-ink2)}
+.au-fine{font-size:12.5px;line-height:1.6;color:var(--st-ink3);margin:22px 0 0;max-width:80ch}
+.au-cta-line{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;margin-top:36px}
+.au-cta-line p{margin:0;font-size:clamp(19px,2.2vw,24px);font-weight:600;letter-spacing:-.02em;max-width:34ch}
+
+@media (max-width:900px){
+  .au-split,.au-band{grid-template-columns:1fr}
+  .au-notes{grid-template-columns:1fr}
+  .au-idea{grid-template-columns:40px 1fr}
+  .au-imp{grid-column:2;text-align:left;display:flex;align-items:baseline;gap:10px}
+  .au-imp .au-l{margin:0}
+  .au-imp .au-v{white-space:nowrap}
+  .au-stage{grid-template-columns:1fr;justify-items:center}
+  .au-pn{width:100%;max-width:520px}
+  .au-srcs{grid-template-columns:1fr}
+}
+@media (max-width:560px){.au-stats{grid-template-columns:1fr}.au-stat{padding:22px 0 0}.au-nums{flex-direction:column;gap:18px}}
+
+/* ================= extras (audit side): video, language, phone view + QR, paywall today vs proposed, ?tour ================= */
+[hidden]{display:none!important}
+/* the device never scrolls: off-screen slides would otherwise make it scrollable by focus / scrollIntoView */
+.phone-in,.scr{overflow:clip}
+/* hero: walkthrough link */
+.au-play::before{content:"▶";font-size:.72em;margin-right:7px;position:relative;top:-1px}
+/* video dialog */
+.au-vid{border:0;padding:0;background:transparent;max-width:min(1120px,94vw);width:100%;overflow:visible}
+.au-vid::backdrop{background:rgba(0,0,0,.74);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.au-vid-in{background:#000;border-radius:18px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.4)}
+.au-vid video{display:block;width:100%;aspect-ratio:16/9;background:#000}
+.au-vid-bar{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 4px 0;font-size:14px}
+.au-vid-bar a{color:#fff;opacity:.85}
+.au-vid-x{background:rgba(255,255,255,.16);border:0;color:#fff;border-radius:980px;padding:8px 16px;font-size:14px;cursor:pointer}
+/* language switch */
+.au-langrow{display:flex;justify-content:center;align-items:center;gap:12px;margin:18px 0 0;font-size:13.5px;color:var(--st-ink2);flex-wrap:wrap}
+.au-lsw{display:inline-flex;gap:2px;padding:3px;background:var(--st-ground);border-radius:980px}
+.au-lsw button{border:0;background:none;padding:6px 13px;border-radius:980px;font-size:13.5px;font-weight:500;color:var(--st-ink2);cursor:pointer;white-space:nowrap}
+.au-lsw button.on{background:var(--st-card);color:var(--st-ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+/* QR card (desktop) / full-screen button (phone) */
+.au-qr{display:flex;align-items:center;gap:18px;margin:26px auto 0;max-width:500px;background:var(--st-ground);border-radius:22px;padding:14px 22px 14px 14px}
+.au-qr img{width:112px;height:112px;border-radius:12px;image-rendering:pixelated;flex:none;background:#fff}
+.au-qr b{display:block;font-size:17px;font-weight:600;letter-spacing:-.01em}
+.au-qr p{margin:4px 0 0;font-size:14.5px;line-height:1.45;color:var(--st-ink2)}
+.au-mobw{display:none;text-align:center;margin-top:22px}
+@media (max-width:900px){.au-qr{display:none}.au-mobw{display:block}}
+/* paywall: today vs proposed */
+.au-cmp{display:grid;grid-template-columns:minmax(0,290px) minmax(0,1fr) minmax(0,290px);gap:clamp(24px,4vw,52px);align-items:center;margin-top:clamp(32px,5vw,52px)}
+.au-cmp figure{margin:0;text-align:center}
+.au-cmp figure img{display:block;width:100%;height:auto;filter:drop-shadow(0 24px 44px rgba(0,0,0,.18))}
+.au-cmp figcaption{margin-top:14px;font-size:15px;font-weight:600}
+.au-cmp figcaption span{color:var(--st-ink2);font-weight:400}
+.au-cmp-go{border:0;padding:0;background:none;cursor:pointer;display:block;width:100%;transition:transform .3s}
+.au-cmp-go:hover{transform:translateY(-4px)}
+.au-chg{list-style:none;margin:0;background:var(--st-card);border-radius:24px;padding:4px clamp(18px,2.4vw,28px)}
+.au-chg li{padding:15px 0;border-top:1px solid var(--st-hair)}
+.au-chg li:first-child{border-top:0}
+.au-chg h4{margin:0 0 7px;font-size:16px;font-weight:600;letter-spacing:-.01em;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.au-chg h4 i{font-style:normal;font-size:12px;font-weight:600;color:var(--st-accent);background:var(--st-mark);border-radius:6px;padding:2px 8px;white-space:nowrap}
+.au-was,.au-now{display:grid;grid-template-columns:78px 1fr;gap:8px;font-size:14.5px;line-height:1.42}
+.au-was{color:var(--st-ink3)}
+.au-now{color:var(--st-ink);margin-top:3px}
+.au-was em,.au-now em{font-style:normal;font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding-top:2px}
+.au-now em{color:var(--st-link)}
+.au-kept{margin:22px 0 0;font-size:14px;color:var(--st-ink2);text-align:center}
+@media (max-width:900px){.au-cmp{grid-template-columns:1fr 1fr;gap:18px}.au-chg{grid-column:1 / -1;order:3}.au-was,.au-now{grid-template-columns:70px 1fr}}
+
+/* ?app — the prototype full screen on a real phone, with a bar that opens the idea panel */
+html.appmode,html.appmode body{height:100%;overflow:hidden;background:#000}
+html.appmode .au-nav,html.appmode .au-top-hero,html.appmode #why,html.appmode #ideas,html.appmode #compare,html.appmode .au-foot,
+html.appmode .au-proto-h,html.appmode #prototype .au-langrow,html.appmode #chips,html.appmode .au-hint,html.appmode .au-qr,html.appmode .au-mobw{display:none!important}
+html.appmode #prototype{padding:0;background:#000}
+html.appmode #prototype .au-wrap{padding:0;max-width:none}
+html.appmode .au-stage{display:block;margin:0}
+html.appmode .phone{position:fixed;top:0;left:0;right:0;margin:0 auto;width:min(100%,480px);height:calc(100% - 56px - env(safe-area-inset-bottom,0px));max-width:none;border-radius:0;padding:0;box-shadow:none;background:#000}
+html.appmode .phone-in{border-radius:0}
+html.appmode .island,html.appmode .sbar{display:none}
+html.appmode .scr .s-pad{padding-top:max(58px,calc(env(safe-area-inset-top,0px) + 16px))}
+html.appmode .scr .s-x,html.appmode .scr .s-lang{top:max(54px,calc(env(safe-area-inset-top,0px) + 10px))}
+.au-appbar,.au-scrim{display:none}
+html.appmode .au-appbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:70;height:calc(56px + env(safe-area-inset-bottom,0px));padding:0 12px env(safe-area-inset-bottom,0px) 16px;align-items:center;gap:12px;background:#0b0b0c;border-top:1px solid rgba(255,255,255,.1);color:#fff}
+.au-ab-why{flex:1;min-width:0;display:flex;align-items:center;gap:9px;background:none;border:0;color:#fff;font-size:14px;font-weight:500;text-align:left;cursor:pointer;padding:0}
+.au-ab-why i{width:8px;height:8px;border-radius:50%;background:var(--st-hi);flex:none}
+.au-ab-why span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.au-ab-why em{font-style:normal;color:rgba(255,255,255,.6);margin-left:auto;flex:none;font-size:13px}
+.au-appbar .au-lsw{background:rgba(255,255,255,.12)}
+.au-appbar .au-lsw button{color:rgba(255,255,255,.75);padding:5px 11px}
+.au-appbar .au-lsw button.on{background:#fff;color:#000}
+html.appmode #panel{position:fixed;left:0;right:0;bottom:0;z-index:80;max-width:none;width:auto;margin:0 auto;border-radius:24px 24px 0 0;max-height:78%;overflow:auto;transform:translateY(105%);transition:transform .3s cubic-bezier(.3,.7,.2,1);padding-bottom:calc(26px + env(safe-area-inset-bottom,0px))}
+html.appmode.au-open #panel{transform:none}
+html.appmode.au-open .au-scrim{display:block;position:fixed;inset:0;z-index:75;background:rgba(0,0,0,.5)}
+
+/* ?tour — 1280×720 walkthrough frames (record-video.sh renders them into assets/walkthrough.mp4) */
+.au-tour{display:none}
+html.tourmode,html.tourmode body{overflow:hidden;background:var(--st-ground)}
+html.tourmode body *{visibility:hidden}
+html.tourmode .phone,html.tourmode .phone *,html.tourmode .au-tour,html.tourmode .au-tour *{visibility:visible}
+html.tourmode .phone{position:fixed;left:170px;top:44px;margin:0;transform:scale(.755);transform-origin:0 0;box-shadow:0 0 0 1.5px #3a3d42,0 34px 80px rgba(0,0,0,.22);z-index:5;max-width:none}
+html.tourmode .au-tour{display:block;position:fixed;inset:0;z-index:6;pointer-events:none;color:var(--st-ink)}
+.au-tb{position:absolute;left:590px;top:30px;display:flex;align-items:center;gap:10px;font-size:16px;font-weight:600}
+.au-tb img{width:26px;height:26px;border-radius:7px}
+.au-tb small{font-size:16px;font-weight:400;color:var(--st-ink2)}
+.au-tby{position:absolute;right:48px;top:32px;font-size:14px;color:var(--st-ink3)}
+.au-tcap{position:absolute;left:590px;right:60px;top:50%;transform:translateY(-50%)}
+.au-tk{display:flex;align-items:center;gap:9px;font-size:17px;font-weight:600}
+.au-tk i{width:9px;height:9px;border-radius:50%;background:var(--st-hi);box-shadow:0 0 0 3px var(--st-mark)}
+.au-tk.au-ctx{color:var(--st-ink2)}.au-tk.au-ctx i{background:var(--st-ink3);box-shadow:none}
+.au-tt{font-size:46px;line-height:1.06;font-weight:700;letter-spacing:-.035em;margin:14px 0 14px;text-wrap:balance}
+.au-tl{font-size:23px;line-height:1.36;color:var(--st-ink2);letter-spacing:-.01em;margin:0;max-width:28ch}
+.au-to{margin-top:28px;padding-top:22px;border-top:1px solid var(--st-hair)}
+.au-to small{display:block;font-size:14px;font-weight:600;color:var(--st-ink3)}
+.au-to b{display:inline-block;font-size:62px;font-weight:700;letter-spacing:-.045em;line-height:1.08;color:var(--st-accent);margin-top:4px}
+.au-to span{display:block;font-size:16px;color:var(--st-ink2);margin-top:2px}
+.au-tprog{position:absolute;left:48px;right:48px;bottom:22px;height:4px;border-radius:3px;background:var(--st-hair);overflow:hidden}
+.au-tprog i{display:block;height:100%;background:var(--st-hi)}
+.au-ttap{position:absolute;left:0;top:0;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;background:rgba(255,255,255,.5);box-shadow:0 0 0 2.5px rgba(255,255,255,.9),0 6px 16px rgba(0,0,0,.35);opacity:0}
+.au-tintro,.au-tend{position:absolute;inset:0;background:var(--st-ground);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;opacity:0}
+.au-tintro .au-lede{margin-top:18px}
+.au-te-h{font-size:46px;line-height:1.08;font-weight:700;letter-spacing:-.035em;margin:0;max-width:18ch;text-wrap:balance}
+.au-te-n{display:flex;gap:64px;margin-top:30px}
+.au-te-n small{display:block;font-size:14px;color:var(--st-ink2)}
+.au-te-n b{display:block;font-size:76px;font-weight:700;letter-spacing:-.045em;line-height:1;color:var(--st-accent);margin:4px 0 6px}
+.au-te-n span{font-size:15px;color:var(--st-ink2)}
+.au-te-q{display:flex;align-items:center;gap:18px;margin-top:34px;background:var(--st-card);border-radius:20px;padding:12px 24px 12px 12px;text-align:left}
+.au-te-q img{width:104px;height:104px;border-radius:10px;image-rendering:pixelated}
+.au-te-q b{display:block;font-size:18px;font-weight:600}
+.au-te-q span{display:block;font-size:15px;color:var(--st-link);margin-top:3px}
+.au-te-f{position:absolute;bottom:44px;left:0;right:0;font-size:13px;color:var(--st-ink3);margin:0}
+
+/* ---------- screen engine (layout only, no colours) ---------- */
+.scr{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--b-bg);color:var(--b-ink);font-family:var(--b-font);
+     transform:translateX(100%);transition:transform .32s cubic-bezier(.3,.7,.2,1);overflow:hidden;text-align:left;line-height:normal;font-size:16px}
+.scr.is-active{transform:none;z-index:2}.scr.is-past{transform:translateX(-28%)}.scr.under{transform:none;z-index:1}
+.scr.sheet{transform:translateY(100%)}.scr.sheet.is-active{transform:none}
+.nofx,.nofx *{transition:none!important}
+.shot .scr{transition:none!important}
+/* ?phone — just the device at (10,10), for shoot.sh and hero-stills.sh (&clear = transparent ground) */
+.phoneonly body{background:#141615}
+.phoneonly.clear body{background:transparent}
+.phoneonly body *{visibility:hidden}
+.phoneonly .phone,.phoneonly .phone *{visibility:visible}
+.phoneonly .phone{position:fixed;top:10px;left:10px;z-index:99;box-shadow:none;max-width:none;margin:0}
+
+/* SCREENS:START — styles for the app's screens. RULE: colours only via var(--b-*), or white/black
+   with alpha (scrims, shadows). RULE: no class name that the audit page above already uses
+   (.hero .btn .chip .list .idea .note .stat .band .num .hint .display .split …) — brand-check refuses collisions. */
+/* Pocket FM screens. Sizes are their live iOS screenshots scaled to the 370 px device (920 px → 370 px = ×0.402);
+   sheets follow their unlock sheet (665 px → 370 px = ×0.556). Colours only via var(--b-*). */
+.scr{background:var(--b-bg);color:var(--b-ink);-webkit-font-smoothing:antialiased}
+:where(.scr) button{font-family:var(--b-font);color:inherit;background:none;border:0;padding:0;cursor:pointer;text-align:inherit}
+.cn{width:19px;height:19px;display:inline-block;vertical-align:-4px;flex:none;object-fit:contain}
+
+/* ---------- tab bar (HOME · STAGE · DISCOVER · LIBRARY · STORE) ---------- */
+.tbar{position:absolute;left:0;right:0;bottom:0;height:93px;background:var(--b-bg);border-top:1px solid var(--b-line);display:grid;grid-template-columns:repeat(5,1fr);overflow:hidden;z-index:5}
+.tbi{position:relative;display:flex;flex-direction:column;align-items:center;padding-top:12px;gap:4px}
+.tbi i{width:37px;height:27px;display:block;background:var(--b-ink2);-webkit-mask:var(--ic) center/contain no-repeat;mask:var(--ic) center/contain no-repeat;position:relative;z-index:1}
+.tbi span{font-size:9.4px;letter-spacing:.07em;color:var(--b-ink2);position:relative;z-index:1}
+.tbi.on i{background:var(--b-pink)}
+.tbi.on span{color:var(--b-pinkink)}
+.tbi.on::before{content:"";position:absolute;left:50%;top:-58px;width:112px;height:140px;transform:translateX(-50%);background:radial-gradient(closest-side,var(--b-glow) 0%,var(--b-glow2) 48%,transparent 100%);opacity:.95}
+.tbi.on::after{content:"";position:absolute;left:50%;top:0;width:24px;height:2.5px;transform:translateX(-50%);border-radius:2px;background:var(--b-grad)}
+
+/* ---------- coin store (today + proposed) ---------- */
+.stop{position:absolute;top:0;left:0;right:0;height:150px;background:var(--b-bg);overflow:hidden}
+.sband{position:absolute;top:44px;left:0;width:100%;height:106px;object-fit:cover;display:block}
+.sbal{position:absolute;top:79px;left:0;right:0;text-align:center}
+.scbl{display:block;font-size:10.8px;letter-spacing:.06em;color:rgba(255,255,255,.62)}
+.srow{display:inline-flex;align-items:center;gap:5px;margin-top:6px;height:26px}
+.srow .cn{width:36px;height:36px}
+.srow .szero{width:16px;height:24px;margin-left:3px;color:var(--b-ink)}
+.srow svg{width:9px;height:16px;margin-left:8px}
+.srate{display:inline-block;margin-top:5px;font-size:10.5px;letter-spacing:.05em;color:var(--b-ink);background:rgba(0,0,0,.35);padding:1px 6px}
+.sbody{position:absolute;top:150px;left:0;right:0;bottom:0;padding:0 15px}
+.sh2{margin:24px 0 0;font-size:15.2px;line-height:20px;font-weight:500;letter-spacing:-.005em;color:var(--b-ink);display:flex;align-items:center;gap:2px;white-space:nowrap}
+.sh2 .fire{font-size:15px;margin-right:1px}
+.scard{position:relative;margin-top:13px;height:64px;background:var(--b-surface)}
+.scard::before{content:"";position:absolute;left:0;right:0;top:0;height:1px;background:repeating-linear-gradient(90deg,var(--b-fill) 0 3px,transparent 3px 6px)}
+.stg{position:absolute;top:0;left:15px;height:16px;display:inline-flex;align-items:center;padding:0 4px;font-size:10.2px;letter-spacing:.04em;white-space:nowrap;background:var(--b-tag);color:var(--b-tagink);z-index:1}
+.stg.g{background:var(--b-accent2);color:var(--b-bg)}
+.stg.pu{background:var(--b-purple);color:var(--b-purpleink)}
+.sln{position:absolute;left:15px;top:26px;display:flex;align-items:center;gap:7px;white-space:nowrap}
+.sln .cn{width:25px;height:25px;margin:0 -2px 0 -3px}
+.sln b{font-size:17.5px;line-height:22px;font-weight:500;color:var(--b-ink)}
+.sln i{font-style:normal;font-size:10.6px;color:var(--b-free);letter-spacing:.01em;margin-left:-1px;padding-top:2px}
+.pf{position:absolute;right:15px;top:9px;width:103px;height:40px;border-radius:21px;background:var(--b-fill);color:var(--b-ink);font-size:12.4px;display:flex;align-items:center;justify-content:center;gap:5px;box-shadow:0 4px 0 -1px var(--b-surface),0 4px 0 0 rgba(255,255,255,.16)}
+.pf s{text-decoration-thickness:1.5px}
+.spk{display:flex;justify-content:space-between;align-items:center;margin-top:38px}
+.spk .sh2{margin:0}
+.sprf{font-size:11px;color:var(--b-ink2);display:flex;align-items:center;gap:4px;white-space:nowrap}
+.sprf svg{width:12px;height:12px}
+.spr{position:relative;height:85.6px}
+.spks{margin-top:15px}
+.spr::before{content:"";position:absolute;left:0;right:0;top:0;height:1px;background:repeating-linear-gradient(90deg,var(--b-line) 0 3px,transparent 3px 6px)}
+.spr .stg{left:0}
+.spr .sln{left:0;top:28px}
+.po{position:absolute;right:0;top:10px;width:103px;height:43px;border-radius:22px;border:1.4px solid var(--b-outline);color:var(--b-ink);font-size:12.6px;display:flex;align-items:center;justify-content:center}
+.spr.rec{background:var(--b-surface)}
+.stgs{position:absolute;top:0;left:15px;display:flex;gap:6px;z-index:1}
+.stgs .stg{position:static}
+.spr.rec .stg{left:15px}.spr.rec .sln{left:15px}
+.spr.rec .po{right:15px;border:0;background:var(--b-fill);height:40px;top:12px;box-shadow:0 4px 0 -1px var(--b-surface),0 4px 0 0 rgba(255,255,255,.16)}
+.spr.on .po{background:var(--b-ink);color:var(--b-bg)}
+
+/* ---------- home ---------- */
+.hhd{position:absolute;top:54px;left:16px;right:16px;height:34px;display:flex;align-items:center;gap:14px}
+.hlogo{height:23px;width:auto;margin-right:auto}
+.hhd svg{width:22px;height:22px}
+.hcoin{display:flex;align-items:center;gap:5px;height:30px;padding:0 11px 0 7px;border-radius:15px;background:var(--b-surface);font-size:15px;font-weight:500}
+.hcoin .cn{width:18px;height:18px}
+.hgen{position:absolute;top:98px;left:16px;right:0;display:flex;gap:22px;white-space:nowrap;font-size:16.5px;color:var(--b-ink2);overflow:hidden}
+.hgen span{position:relative;padding-bottom:9px}
+.hgen .on{color:var(--b-ink);font-weight:500}
+.hgen .on::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2.5px;border-radius:2px;background:var(--b-grad);box-shadow:0 2px 10px var(--b-glow)}
+.hsec{position:absolute;top:148px;left:16px;right:16px}
+.hkick{font-size:11.5px;letter-spacing:.07em;color:var(--b-lilac);display:flex;align-items:center;gap:6px}
+.hkick svg{width:12px;height:12px}
+.hcv{display:block;width:100%;height:296px;object-fit:cover;object-position:50% 72%;border-radius:10px;margin-top:9px}
+.htt{margin:12px 0 0;font-size:21px;line-height:26px;font-weight:600}
+.hmeta{font-size:11.5px;letter-spacing:.05em;color:var(--b-ink2);margin-top:4px}
+.hbtns{display:flex;gap:10px;margin-top:13px}
+.hplay{flex:1;height:46px;border-radius:8px;background:var(--b-primary);color:var(--b-primary-ink);font-size:16.5px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:9px}
+.hplay svg{width:15px;height:15px}
+.hadd{width:52px;height:46px;border-radius:8px;background:var(--b-pl);display:grid;place-items:center}
+.hadd svg{width:20px;height:20px}
+.hmore{display:flex;justify-content:space-between;align-items:center;margin-top:18px;font-size:16.5px;font-weight:500}
+.hmore svg{width:9px;height:15px}
+.hrow{display:flex;align-items:center;gap:12px;margin-top:10px}
+.hrow img{width:58px;height:58px;border-radius:6px;object-fit:cover}
+.hrow b{display:block;font-size:15.5px;font-weight:500}
+.hrow small{display:block;font-size:11px;letter-spacing:.05em;color:var(--b-ink2);margin-top:3px}
+
+/* ---------- player (play · cliff · done) ---------- */
+.ply{background:linear-gradient(180deg,var(--b-pl) 0%,var(--b-peek) 45%,var(--b-bg) 100%)}
+.phd{position:absolute;top:52px;left:14px;right:14px;height:40px;display:flex;align-items:center;justify-content:space-between}
+.phd svg{width:22px;height:22px}
+.ptt{font-size:16.5px;font-weight:400;color:var(--b-ink)}
+.pcv{position:absolute;top:108px;left:50%;width:226px;height:226px;margin-left:-113px;object-fit:cover;border-radius:6px;box-shadow:0 0 0 1px rgba(255,255,255,.08)}
+.pep{position:absolute;top:356px;left:0;right:0;text-align:center;font-size:14px;color:var(--b-ink2);margin:0}
+.ppl{position:absolute;top:386px;left:0;right:0;display:flex;justify-content:center;gap:9px}
+.ppi{height:34px;min-width:44px;padding:0 12px;border-radius:17px;background:var(--b-pl);display:flex;align-items:center;justify-content:center;gap:7px;font-size:12.5px;letter-spacing:.04em}
+.ppi svg{width:17px;height:17px}
+.pwv{position:absolute;top:442px;left:0;right:0;height:56px;background:rgba(255,255,255,.035)}
+.pwf{position:absolute;left:0;top:0;bottom:0;background:var(--b-time);opacity:.2}
+.pwh{position:absolute;top:-6px;bottom:0;width:2px;background:var(--b-time)}
+.pwh::before{content:"";position:absolute;top:0;left:0;width:6px;height:9px;background:var(--b-time)}
+.pwh b{position:absolute;top:62px;left:-24px;font-weight:400;font-size:12px;letter-spacing:.04em;color:var(--b-ink);background:var(--b-time);padding:1px 5px}
+.ptm{position:absolute;top:510px;left:16px;right:16px;display:flex;justify-content:space-between;font-size:12px;letter-spacing:.05em;color:var(--b-dur)}
+.pct{position:absolute;top:548px;left:26px;right:26px;display:flex;align-items:center;justify-content:space-between}
+.pct svg{width:24px;height:24px}
+.pct .pbig{width:62px;height:62px;border-radius:50%;background:var(--b-ink);display:grid;place-items:center}
+.pct .pbig svg{width:24px;height:24px}
+.ppk{position:absolute;left:0;right:0;bottom:0;height:178px;background:var(--b-peek);border-radius:22px 22px 0 0;padding:10px 16px 0}
+.pgrab{width:38px;height:4px;border-radius:2px;background:var(--b-grab);margin:0 auto}
+.ptabs{display:flex;justify-content:space-between;align-items:flex-end;margin-top:18px;padding:0 6px 10px;border-bottom:1px solid rgba(255,255,255,.06)}
+.ptab{font-size:13.5px;letter-spacing:.06em;color:var(--b-ink);position:relative}
+.ptab small{font-size:11px;color:var(--b-ink);margin-left:6px;letter-spacing:.02em}
+.ptab small em{font-style:normal;color:var(--b-ink2)}
+.ptab.on::after{content:"";position:absolute;left:-6px;right:-6px;bottom:-11px;height:2.5px;border-radius:2px;background:var(--b-grad);box-shadow:0 0 12px var(--b-glow)}
+.ptab.off{color:var(--b-ink2);margin-right:30px}
+.per{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.per .pet{flex:1;min-width:0}
+.per b{display:block;font-size:15.5px;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.per small{display:block;font-size:11.5px;letter-spacing:.04em;color:var(--b-dur);margin-top:4px}
+.pdl{width:38px;height:38px;border-radius:50%;border:1px solid var(--b-dlline);display:grid;place-items:center;flex:none}
+.pdl svg{width:17px;height:17px}
+.per.now b{color:var(--b-ink)}
+.per.lk b{color:var(--b-ink)}
+.per .yel{color:var(--b-free);display:flex;align-items:center;gap:5px;letter-spacing:.02em}
+.per .yel .cn{width:13px;height:13px}
+/* cliff: the sheet rises at the end of Episode 8 */
+.ply.up .ppk{height:372px}
+.nxc{margin-top:12px;background:var(--b-surface);border-radius:10px;padding:13px 14px 14px;position:relative}
+.nxc .stg{position:static;display:inline-flex;background:none;padding:0;color:var(--b-lilac)}
+.nxr{display:flex;align-items:center;gap:12px;margin-top:9px}
+.nxr .pet{flex:1}
+.nxr b{display:block;font-size:17px;font-weight:500}
+.nxr small{display:block;font-size:11.5px;letter-spacing:.04em;color:var(--b-dur);margin-top:4px}
+.nxl{width:22px;height:22px;flex:none}
+.nxb{margin-top:12px;width:100%;height:44px;border-radius:7px;background:var(--b-primary);color:var(--b-primary-ink);font-size:16px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px}
+.nxb .cn{width:17px;height:17px}
+/* done */
+.toast{position:absolute;top:100px;left:24px;right:24px;z-index:6;background:var(--b-fill);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px;font-size:14.5px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.toast svg{width:20px;height:20px;flex:none}
+.toast span{flex:1}
+.toast em{font-style:normal;color:var(--b-free);display:flex;align-items:center;gap:4px;white-space:nowrap}
+
+/* ---------- sheets (unlock · offer) ---------- */
+.scr.ov{background:transparent}
+.scrim{position:absolute;inset:0;background:rgba(0,0,0,.62)}
+.shb{position:absolute;left:0;right:0;bottom:0;background:var(--b-sheet);border-radius:24px 24px 0 0;padding:16px 17px 18px;display:flex;flex-direction:column;align-items:stretch}
+.xr{position:absolute;left:50%;width:44px;height:44px;margin-left:-22px;border-radius:50%;background:var(--b-card3);display:grid;place-items:center;z-index:2}
+.xr svg{width:18px;height:18px}
+.shcv{width:82px;height:82px;border-radius:5px;object-fit:cover;align-self:center;margin-top:-2px}
+.shh{margin:16px 0 0;text-align:center;font-size:19.3px;line-height:25px;font-weight:600}
+.shs{margin:6px 0 0;text-align:center;font-size:14px;color:var(--b-ink3);display:flex;justify-content:center;align-items:center;gap:5px}
+.shs .cn{width:14px;height:14px}
+.rcs{display:flex;flex-direction:column;gap:9px;margin-top:18px}
+.rc{display:flex;align-items:center;gap:12px;height:65px;padding:0 14px 0 12px;border-radius:7px;border:1px solid var(--b-line3);background:transparent;width:100%}
+.rc.on{background:var(--b-card3);border-color:var(--b-radio)}
+.rd{width:20px;height:20px;border-radius:50%;border:1.6px solid var(--b-radio);flex:none;display:grid;place-items:center}
+.rd svg{width:12px;height:12px;display:none}
+.rc.on .rd{background:var(--b-ink);border-color:var(--b-ink)}
+.rc.on .rd svg{display:block}
+.rcm{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.yt{font-size:12.5px;line-height:15px;padding:2px 6px;border-radius:3px;background:var(--b-ytag);color:var(--b-yink);white-space:nowrap}
+.rcl{display:flex;align-items:center;gap:4px;font-size:12.6px;color:var(--b-ink4);white-space:nowrap}
+.rcl b{font-size:14px;font-weight:600;color:var(--b-ink)}
+.rcl i{font-style:normal;color:var(--b-yink2)}
+.rcp{font-size:15.5px;font-weight:500;white-space:nowrap}
+.smr{margin-top:18px;align-self:center;font-size:16.5px;color:var(--b-primary);display:flex;align-items:center;gap:8px}
+.smr svg{width:8px;height:14px}
+.cbal{margin:16px 0 0;text-align:center;font-size:14.5px;color:var(--b-ink3);display:flex;justify-content:center;align-items:center;gap:5px}
+.cbal .cn{width:15px;height:15px}
+.bnow{margin-top:12px;height:48px;border-radius:6px;background:var(--b-primary);color:var(--b-primary-ink);font-size:16.5px;font-weight:600;text-align:center}
+/* offer on close: their ad packs */
+.oart{width:100%;height:118px;object-fit:cover;border-radius:6px;display:block}
+.aps{margin-top:12px}
+.apr{position:relative;height:72px;display:flex;align-items:center;justify-content:space-between}
+.apr::before{content:"";position:absolute;left:0;right:0;top:0;height:1px;background:repeating-linear-gradient(90deg,var(--b-line3) 0 3px,transparent 3px 6px)}
+.apr .stg{left:0;top:0}
+.apl{display:flex;align-items:center;gap:7px;padding-top:10px;white-space:nowrap}
+.apl .cn{width:23px;height:23px;margin:0 -2px 0 -3px}
+.apl b{font-size:19px;font-weight:400}
+.apl i{font-style:normal;font-size:13.5px;color:var(--b-free)}
+.apb{position:static;width:112px;height:42px;margin-top:8px;font-size:16px}
+
+/* SCREENS:END */
+</style>
+</head>
+<body>
+
+<nav class="au-nav" aria-label="Sections">
+  <div class="au-nav-in">
+    <div class="au-brand">
+      <img src="assets/brand/appstore-icon.jpg" alt="">
+      <span>Growth Audit <small>· Pocket FM</small></span>
+    </div>
+    <a class="au-opt" href="#why">Why this</a>
+    <a href="#ideas">Five ideas</a>
+    <a href="#prototype">Prototype</a>
+    <a class="au-opt" href="#compare" id="navCompare" hidden>Paywall</a>
+  </div>
+</nav>
+
+<header class="au-top-hero" id="top">
+  <div class="au-wrap">
+    <p class="au-eyebrow"><i></i>Growth Audit · October 2026</p>
+    <h1 class="au-display">Pocket FM</h1>
+    <p class="au-lede">Five ideas to turn more new listeners into first-time coin buyers. <span>Each one built into your own app, so you can tap through it.</span></p>
+    <p class="au-byline">Prepared by Adapty for the Pocket FM team</p>
+    <div class="au-ctas">
+      <a class="au-btn" href="#ideas">See the five ideas</a>
+      <a class="au-lnk" href="#prototype">Open the prototype</a>
+      <button type="button" class="au-lnk au-play" id="heroVideo" hidden>Watch the 30-second walkthrough</button>
+    </div>
+  </div>
+  <!-- filled from CONTENT.hero: three screen ids → assets/hero/<id>.png (make them with hero-stills.sh) -->
+  <div class="au-phones" id="heroPhones" aria-label="Three screens from the prototype"></div>
+</header>
+
+<section class="au-sec au-white" id="why">
+  <div class="au-wrap">
+    <div class="au-split">
+      <div>
+        <p class="au-kicker">Why you’re seeing this</p>
+        <h2 class="au-h2">30,000+ apps taught us what moves conversion. <span>Here’s what we’d test first at Pocket FM.</span></h2>
+      </div>
+      <div>
+        <p>Adapty runs in-app purchases and subscriptions for <b>more than 30,000 apps</b>, so we see which onboarding and paywall changes lift revenue across the whole market, not just inside one app.</p>
+        <p>We pointed that at Pocket FM. We took <b>your own screens, copy and prices</b> from screenshots of your live iOS store, your App Store listing and public reviews, and rebuilt the path from install to the first coin purchase around the five ideas with the most potential.</p>
+      </div>
+    </div>
+    <div class="au-stats">
+      <div class="au-stat"><b>30,000+</b><span>apps run their purchases on Adapty</span></div>
+      <div class="au-stat"><b>5</b><span>ideas, each built as a working screen</span></div>
+      <div class="au-stat"><b>0</b><span>changes to your art direction</span></div>
+    </div>
+    <div class="au-notes">
+      <div class="au-note">
+        <div class="au-ic"><svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.9z"/></svg></div>
+        <h3>Five ideas, not fifteen</h3>
+        <p>We’re not proposing to rebuild every screen. These are the changes with the highest potential, ranked by what we’d test first.</p>
+      </div>
+      <div class="au-note">
+        <div class="au-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17M3.5 12h17"/></svg></div>
+        <h3>Your design, not ours</h3>
+        <p>Every colour, control and price in the prototype is Pocket FM’s. We changed the order and what gets shown.</p>
+      </div>
+      <div class="au-note">
+        <div class="au-ic"><svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v6.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5v-13A1.5 1.5 0 0 1 5.5 4H15"/></svg></div>
+        <h3>We hope you haven’t tried these yet</h3>
+        <p>We work from the outside, so we can’t see your first session after an ad or your test history. If you’ve already run one of these, tell us and we’ll go deeper on the rest.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="au-sec" id="ideas">
+  <div class="au-wrap">
+    <div class="au-ideas-h">
+      <p class="au-kicker">The shortlist</p>
+      <h2 class="au-h2">Five ideas. <span>Ranked by what we’d test first.</span></h2>
+    </div>
+    <div class="au-list" id="ideaList"></div>
+    <div class="au-band">
+      <div>
+        <p class="au-k">Potential outcome, based on Adapty data</p>
+        <h3>Together they work on three moments: where a new listener lands, how the first coin is asked for, and what happens when they say no.</h3>
+        <p class="au-fn" id="bandFn"></p>
+        <a class="au-btn" href="#prototype">Tap through the prototype</a>
+      </div>
+      <div class="au-nums" id="bandNums"></div>
+    </div>
+  </div>
+</section>
+
+<section class="au-sec au-white" id="prototype">
+  <div class="au-wrap">
+    <div class="au-proto-h">
+      <p class="au-kicker">The prototype</p>
+      <h2 class="au-h2">Every idea, inside your own app.</h2>
+      <p>Tap through it like a new listener who came from a trailer, or jump straight to an idea. Numbered chips mark the screens that carry one.</p>
+    </div>
+    <div class="au-langrow" id="langRow" hidden><span>Prototype language</span><div class="au-lsw" id="langSw" role="group" aria-label="Prototype language"></div></div>
+    <div class="au-seg" id="chips" role="tablist" aria-label="Screens"></div>
+    <div class="au-stage">
+      <div class="phone"><div class="phone-in">
+        <div class="island"></div>
+        <div class="sbar"><span>9:41</span><svg width="68" height="13" viewBox="0 0 68 13" fill="currentColor" aria-hidden="true"><rect x="0" y="8" width="3" height="4.5" rx=".8"/><rect x="4.6" y="5.8" width="3" height="6.7" rx=".8"/><rect x="9.2" y="3.4" width="3" height="9.1" rx=".8"/><rect x="13.8" y="1" width="3" height="11.5" rx=".8"/><path d="M29 3.2a9.5 9.5 0 0 1 12.6 0l-1.4 1.5a7.4 7.4 0 0 0-9.8 0zM31.4 5.8a6 6 0 0 1 7.8 0l-1.4 1.5a4 4 0 0 0-5 0zM35.3 12l-2.1-2.3a3 3 0 0 1 4.2 0z"/><rect x="45.5" y="1" width="20" height="11" rx="3.2" fill="none" stroke="currentColor" stroke-opacity=".4"/><rect x="47.3" y="2.8" width="16.4" height="7.4" rx="1.8"/><path d="M67 4.5v4a2 2 0 0 0 0-4z" fill-opacity=".45"/></svg></div>
+
+<!-- SCREENS:START — one section.scr[data-id=ID] per screen, in flow order. Only the screens an idea lands on,
+     plus the context needed to read the flow (~8–10). Wiring: data-go="<id>" · data-back · data-pick="key:value"
+     (+ data-advance="<id>") · data-toggle="key:value" · data-bind="key" / "label:key" / "count:key" ·
+     data-requires="key" · data-show="key:value" · data-input="key" · class="scr sheet" slides up (offer paywall).
+     RULE: images only from assets/ (their app, their site, App Store) — never stock, never hotlinked.
+     Extras: data-t="key" = translatable (markup is CONTENT.langs[0]; other languages in CONTENT.i18n) — keep data-t on
+     leaf-ish elements, never on an element that also carries data-bind/data-pick/data-show;
+     data-langtoggle cycles the language (their own language pill); data-aside keeps a screen out of the flow
+     (the paywall TODAY, rendered only for the side-by-side still). -->
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-chr" viewBox="0 0 9 16"><path d="M1.5 1.5 7.5 8l-6 6.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-chd" viewBox="0 0 24 24"><path d="M5 9l7 7 7-7" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-dots" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></symbol>
+  <symbol id="i-srch" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M15.5 15.5 21 21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15a.8.8 0 0 0 1.2.7l12-7.5a.8.8 0 0 0 0-1.4l-12-7.5A.8.8 0 0 0 7 4.5z" fill="currentColor"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><rect x="6" y="4.5" width="4" height="15" rx="1" fill="currentColor"/><rect x="14" y="4.5" width="4" height="15" rx="1" fill="currentColor"/></symbol>
+  <symbol id="i-prev" viewBox="0 0 24 24"><path d="M6 5v14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M19 5.5v13L9 12z" fill="currentColor"/></symbol>
+  <symbol id="i-next" viewBox="0 0 24 24"><path d="M18 5v14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M5 5.5v13L15 12z" fill="currentColor"/></symbol>
+  <symbol id="i-r10" viewBox="0 0 24 24"><path d="M5.6 8.5A8 8 0 1 1 4 13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M5 4.5v4.3h4.3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><text x="12.3" y="15.6" text-anchor="middle" font-size="7.4" font-weight="700" fill="currentColor" font-family="sans-serif">10</text></symbol>
+  <symbol id="i-f10" viewBox="0 0 24 24"><path d="M18.4 8.5A8 8 0 1 0 20 13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M19 4.5v4.3h-4.3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><text x="11.7" y="15.6" text-anchor="middle" font-size="7.4" font-weight="700" fill="currentColor" font-family="sans-serif">10</text></symbol>
+  <symbol id="i-cmt" viewBox="0 0 24 24"><path d="M4 5h16v11H10l-4 3.5V16H4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 10.5h.01M12 10.5h.01M16 10.5h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-dl" viewBox="0 0 24 24"><path d="M12 4v10M7.5 9.5 12 14l4.5-4.5M5 15v4h14v-4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-gauge" viewBox="0 0 24 24"><path d="M4.5 16a8 8 0 1 1 15 0" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M12 13l3-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M19 14.5A7.5 7.5 0 0 1 9.5 5a7.5 7.5 0 1 0 9.5 9.5z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2" fill="currentColor"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-chk" viewBox="0 0 12 12"><path d="M2 6.3 4.8 9 10 3.3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-zero" viewBox="0 0 16 24"><rect x="2" y="2" width="12" height="20" rx="4.5" fill="none" stroke="currentColor" stroke-width="3.4"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z" fill="currentColor"/></symbol>
+  <symbol id="i-ok" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M7.5 12.3l3 3 6-6.3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-trl" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10 9v6l5-3z" fill="currentColor"/></symbol>
+</svg>
+
+<!-- 1 · HOME: the show from their trailer leads -->
+<section class="scr" data-id="home">
+  <div class="hhd">
+    <img class="hlogo" src="assets/brand/logo.svg" alt="Pocket FM">
+    <svg><use href="#i-srch"/></svg>
+    <span class="hcoin"><img class="cn" src="assets/crop/coin.png" alt="">0</span>
+  </div>
+  <div class="hgen"><span class="on">For you</span><span>Fantasy</span><span>Romance</span><span>Werewolf</span><span>Thriller</span></div>
+  <div class="hsec">
+    <div class="hkick"><svg><use href="#i-trl"/></svg><span>FROM THE TRAILER YOU WATCHED</span></div>
+    <img class="hcv" src="assets/crop/cover-mvs-lg.jpg" data-cover="lg" alt="">
+    <h2 class="htt"><span>My Vampire System</span></h2>
+    <div class="hmeta"><span>FANTASY · 2296 EPISODES · E1–E8 FREE</span></div>
+    <div class="hbtns">
+      <button class="hplay" data-go="play"><svg><use href="#i-play"/></svg><span>Play Episode 1</span></button>
+      <button class="hadd" aria-label="My list"><svg><use href="#i-plus"/></svg></button>
+    </div>
+    <div class="hmore"><span>More like this</span><svg><use href="#i-chr"/></svg></div>
+    <div class="hrow"><img src="assets/crop/cover-phoenix.png" alt=""><div><b>Heart of a Phoenix</b><small>E1 FREE</small></div></div>
+  </div>
+  <nav class="tbar">
+    <span class="tbi on"><i style="--ic:url(assets/crop/tab-home.png)"></i><span>HOME</span></span>
+    <span class="tbi"><i style="--ic:url(assets/crop/tab-stage.png)"></i><span>STAGE</span></span>
+    <span class="tbi"><i style="--ic:url(assets/crop/tab-disc.png)"></i><span>DISCOVER</span></span>
+    <span class="tbi"><i style="--ic:url(assets/crop/tab-lib.png)"></i><span>LIBRARY</span></span>
+    <span class="tbi"><i style="--ic:url(assets/crop/tab-store.png)"></i><span>STORE</span></span>
+  </nav>
+</section>
+
+<!-- 2 · PLAYER at Episode 1 (as in their App Store screenshot) -->
+<section class="scr ply" data-id="play">
+  <div class="phd"><svg><use href="#i-chd"/></svg><span class="ptt">My Vampire System</span><svg><use href="#i-dots"/></svg></div>
+  <img class="pcv" src="assets/crop/cover-mvs-lg.jpg" data-cover="lg" alt="">
+  <p class="pep"><span>E1 - Just an Old Book</span></p>
+  <div class="ppl"><span class="ppi"><svg><use href="#i-cmt"/></svg>3K</span><span class="ppi"><svg><use href="#i-dl"/></svg></span><span class="ppi"><svg><use href="#i-gauge"/></svg></span><span class="ppi"><svg><use href="#i-moon"/></svg></span></div>
+  <div class="pwv"><i class="pwf" style="width:47%"></i><i class="pwh" style="left:47%"><b>04:45</b></i></div>
+  <div class="ptm"><span>00:00</span><span>09:56</span></div>
+  <div class="pct"><svg><use href="#i-prev"/></svg><svg><use href="#i-r10"/></svg><span class="pbig"><svg style="color:#000"><use href="#i-pause"/></svg></span><svg><use href="#i-f10"/></svg><button class="pskip" data-go="cliff" aria-label="Next episode"><svg width="24" height="24"><use href="#i-next"/></svg></button></div>
+  <div class="ppk">
+    <div class="pgrab"></div>
+    <div class="ptabs"><span class="ptab on"><span>EPISODES</span><small>01<em>/2296</em></small></span><span class="ptab off">NEXT SERIES</span></div>
+    <div class="per now"><div class="pet"><b>1. Just an Old Book</b><small>09:56</small></div><span class="pdl"><svg><use href="#i-dl"/></svg></span></div>
+    <div class="per"><div class="pet"><b>2. Daily Quest</b><small>08:31</small></div><span class="pdl"><svg><use href="#i-dl"/></svg></span></div>
+  </div>
+</section>
+
+<!-- 3 · CLIFFHANGER: Episode 8 ends, the next one is asked for inside the player -->
+<section class="scr ply up" data-id="cliff">
+  <div class="phd"><svg><use href="#i-chd"/></svg><span class="ptt">My Vampire System</span><svg><use href="#i-dots"/></svg></div>
+  <img class="pcv" src="assets/crop/cover-mvs-lg.jpg" data-cover="lg" alt="" style="top:100px;width:200px;height:200px;margin-left:-100px">
+  <p class="pep" style="top:312px"><span>E8 - Fate</span></p>
+  <div class="pwv" style="top:344px;height:40px"><i class="pwf" style="width:100%"></i><i class="pwh" style="left:calc(100% - 2px)"></i></div>
+  <div class="ptm" style="top:392px"><span>06:52</span><span>06:52</span></div>
+  <div class="ppk">
+    <div class="pgrab"></div>
+    <div class="ptabs"><span class="ptab on"><span>EPISODES</span><small>08<em>/2296</em></small></span><span class="ptab off">NEXT SERIES</span></div>
+    <div class="per now"><div class="pet"><b>8. Fate</b><small>06:52 · <span>PLAYED</span></small></div><span class="pdl"><svg><use href="#i-dl"/></svg></span></div>
+    <div class="nxc">
+      <span class="stg">UP NEXT · CONTINUES RIGHT WHERE E8 ENDS</span>
+      <div class="nxr"><div class="pet"><b>9. What system?</b><small>05:56</small></div><svg class="nxl" style="color:var(--b-yink)"><use href="#i-lock"/></svg></div>
+      <button class="nxb" data-go="unlock"><span>Unlock Episode 9 for</span><img class="cn" src="assets/crop/coin.png" alt="">9</button>
+    </div>
+    <div class="per lk"><div class="pet"><b>10. New Quest</b><small class="yel"><img class="cn" src="assets/crop/coin.png" alt=""><span>9 coins to unlock</span></small></div><svg class="nxl" style="color:var(--b-yink)"><use href="#i-lock"/></svg></div>
+  </div>
+</section>
+
+<!-- 4 · UNLOCK SHEET: their sheet, Trial Pack first -->
+<section class="scr sheet ov" data-id="unlock">
+  <div class="scrim"></div>
+  <button class="xr" data-go="offer" aria-label="Close" style="top:212px"><svg style="color:var(--b-x)"><use href="#i-x"/></svg></button>
+  <div class="shb" style="top:270px">
+    <img class="shcv" src="assets/crop/cover-mvs.png" data-cover="mvs" alt="">
+    <h3 class="shh">Buy coins to unlock episodes</h3>
+    <p class="shs"><span>Next: E9. What system? ·</span><img class="cn" src="assets/crop/coin.png" alt=""><span>9 coins</span></p>
+    <div class="rcs">
+      <button class="rc" data-pick="pack:trial"><span class="rd"><svg style="color:#000"><use href="#i-chk"/></svg></span><span class="rcm"><span class="yt">Trial Pack · ≈ 37 episodes</span><span class="rcl"><img class="cn" src="assets/crop/coin.png" alt=""><b>136</b><span>coins</span><i>+ 204 <span>free coins</span></i></span></span><span class="rcp">$0.99</span></button>
+      <button class="rc" data-pick="pack:p4"><span class="rd"><svg style="color:#000"><use href="#i-chk"/></svg></span><span class="rcm"><span class="yt">120% bonus · ≈ 8 episodes</span><span class="rcl"><img class="cn" src="assets/crop/coin.png" alt=""><b>34</b><span>coins</span><i>+ 42 <span>free coins</span></i></span></span><span class="rcp">$4.99</span></button>
+      <button class="rc" data-pick="pack:p9"><span class="rd"><svg style="color:#000"><use href="#i-chk"/></svg></span><span class="rcm"><span class="yt">150% bonus · ≈ 18 episodes</span><span class="rcl"><img class="cn" src="assets/crop/coin.png" alt=""><b>68</b><span>coins</span><i>+ 102 <span>free coins</span></i></span></span><span class="rcp">$9.99</span></button>
+    </div>
+    <button class="smr" data-go="store"><span>See more packs</span><svg><use href="#i-chr"/></svg></button>
+    <p class="cbal"><span>Current balance</span><img class="cn" src="assets/crop/coin.png" alt=""><span>0 Coins</span></p>
+    <button class="bnow" data-go="done"><span>Buy now</span></button>
+  </div>
+</section>
+
+<!-- 5 · OFFER ON CLOSE: their ad packs, a free way to Episode 9 -->
+<section class="scr sheet ov" data-id="offer">
+  <div class="scrim"></div>
+  <button class="xr" data-go="cliff" aria-label="Close" style="top:226px"><svg style="color:var(--b-x)"><use href="#i-x"/></svg></button>
+  <div class="shb" style="top:284px">
+    <img class="oart" src="assets/crop/earn-art.png" alt="">
+    <h3 class="shh">Unlock Episode 9 with ads</h3>
+    <p class="shs"><span>Not buying today? No purchase needed: 10 coins covers Episode 9.</span></p>
+    <div class="aps">
+      <div class="apr"><span class="apl"><img class="cn" src="assets/crop/coin.png" alt=""><b>1</b></span><button class="pf apb" data-pick="pack:ads1"><span>1 ad</span></button></div>
+      <div class="apr hi"><span class="stg pu">43% BONUS</span><span class="apl"><img class="cn" src="assets/crop/coin.png" alt=""><b>10</b><i>enough for Episode 9</i></span><button class="pf apb" data-pick="pack:ads" data-advance="done"><span>7 ads</span></button></div>
+      <div class="apr"><span class="stg pu">54% BONUS</span><span class="apl"><img class="cn" src="assets/crop/coin.png" alt=""><b>20</b></span><button class="pf apb" data-pick="pack:ads20"><span>13 ads</span></button></div>
+    </div>
+    <button class="smr ofm" data-go="store"><span>See all coin packs</span><svg><use href="#i-chr"/></svg></button>
+  </div>
+</section>
+
+<!-- 6 · STORE, proposed: their store in episodes, one pack recommended, proof -->
+<section class="scr" data-id="store">
+  <div class="stop">
+    <img class="sband" src="assets/crop/store-band.png" alt="">
+    <div class="sbal"><span class="scbl">COIN BALANCE</span><span class="srow"><img class="cn" src="assets/crop/coin.png" alt=""><svg class="szero" viewBox="0 0 16 24"><rect x="2" y="2" width="12" height="20" rx="4.5" fill="none" stroke="currentColor" stroke-width="3.4"/><path d="M5 6.5l6 11" stroke="currentColor" stroke-width="3"/></svg><svg><use href="#i-chr"/></svg></span><br><span class="srate">1 EPISODE ≈ 9 COINS</span></div>
+  </div>
+  <div class="sbody">
+    <h2 class="sh2"><span class="fire">🔥</span><span>Trial Pack | Limited Time Offer</span></h2>
+    <div class="scard"><span class="stg g">≈ 37 EPISODES + NO ADS FOR 2 WEEKS</span><span class="sln"><img class="cn" src="assets/crop/coin.png" alt=""><b>136</b><i>+204 <span>Free coins</span></i></span><button class="pf" data-pick="pack:trial" data-advance="done"><span>$0.99</span></button></div>
+    <div class="spk"><h2 class="sh2">Coin Packs</h2><span class="sprf"><svg style="color:var(--b-yink)"><use href="#i-star"/></svg><span>4.7 · 273K ratings</span></span></div>
+    <div class="spks">
+      <div class="spr"><span class="stg">≈ 2 EPISODES + NO ADS FOR 1 DAY</span><span class="sln"><img class="cn" src="assets/crop/coin.png" alt=""><b>12</b><i>+12 <span>Free coins</span></i></span><button class="po" data-pick="pack:p2" data-advance="done"><span>$1.99</span></button></div>
+      <div class="spr"><span class="stg">≈ 8 EPISODES + NO ADS FOR 1 DAY</span><span class="sln"><img class="cn" src="assets/crop/coin.png" alt=""><b>34</b><i>+42 <span>Free coins</span></i></span><button class="po" data-pick="pack:p4" data-advance="done"><span>$4.99</span></button></div>
+      <div class="spr rec"><span class="stgs"><span class="stg">≈ 18 EPISODES + NO ADS FOR 1 WEEK</span><span class="stg pu">RECOMMENDED</span></span><span class="sln"><img class="cn" src="assets/crop/coin.png" alt=""><b>68</b><i>+102 <span>Free coins</span></i></span><button class="po" data-pick="pack:p9" data-advance="done"><span>$9.99</span></button></div>
+      <div class="spr"><span class="stg">≈ 30 EPISODES + NO ADS FOR 2 WEEKS</span><span class="sln"><img class="cn" src="assets/crop/coin.png" alt=""><b>110</b><i>+165 <span>Free coins</span></i></span><button class="po" data-pick="pack:p15" data-advance="done"><span>$15.99</span></button></div>
+      <div class="spr"><span class="stg">200% BONUS + NO ADS FOR 2 WEEKS</span><span class="po"></span></div>
+    </div>
+  </div>
+  <nav class="tbar">
+    <span class="tbi"><i style="--ic:url(assets/crop/tab-home.png)"></i><span>HOME</span></span>
+    <span class="tbi"><i style="--ic:url(assets/crop/tab-stage.png)"></i><span>STAGE</span></span>
+    <span class="tbi"><i style="--ic:url(assets/crop/tab-disc.png)"></i><span>DISCOVER</span></span>
+    <span class="tbi"><i style="--ic:url(assets/crop/tab-lib.png)"></i><span>LIBRARY</span></span>
+    <span class="tbi on"><i style="--ic:url(assets/crop/tab-store.png)"></i><span>STORE</span></span>
+  </nav>
+</section>
+
+<!-- 7 · DONE: Episode 9 plays -->
+<section class="scr ply" data-id="done">
+  <div class="phd"><svg><use href="#i-chd"/></svg><span class="ptt">My Vampire System</span><svg><use href="#i-dots"/></svg></div>
+  <div class="toast"><svg style="color:var(--b-accent2)"><use href="#i-ok"/></svg><span>Episode 9 unlocked</span><em><img class="cn" src="assets/crop/coin.png" alt=""><b class="left">331</b>&nbsp;<span>left</span></em></div>
+  <img class="pcv" src="assets/crop/cover-mvs-lg.jpg" data-cover="lg" alt="">
+  <p class="pep"><span>E9 - What system?</span></p>
+  <div class="ppl"><span class="ppi"><svg><use href="#i-cmt"/></svg>3K</span><span class="ppi"><svg><use href="#i-dl"/></svg></span><span class="ppi"><svg><use href="#i-gauge"/></svg></span><span class="ppi"><svg><use href="#i-moon"/></svg></span></div>
+  <div class="pwv"><i class="pwf" style="width:18%"></i><i class="pwh" style="left:18%"><b>01:04</b></i></div>
+  <div class="ptm"><span>00:00</span><span>05:56</span></div>
+  <div class="pct"><svg><use href="#i-prev"/></svg><svg><use href="#i-r10"/></svg><span class="pbig"><svg style="color:#000"><use href="#i-pause"/></svg></span><svg><use href="#i-f10"/></svg><svg><use href="#i-next"/></svg></div>
+  <div class="ppk">
+    <div class="pgrab"></div>
+    <div class="ptabs"><span class="ptab on"><span>EPISODES</span><small>09<em>/2296</em></small></span><span class="ptab off">NEXT SERIES</span></div>
+    <div class="per now"><div class="pet"><b>9. What system?</b><small>05:56</small></div><span class="pdl"><svg><use href="#i-dl"/></svg></span></div>
+    <div class="per lk"><div class="pet"><b>10. New Quest</b><small class="yel"><img class="cn" src="assets/crop/coin.png" alt=""><span>9 coins to unlock</span></small></div><svg class="nxl" style="color:var(--b-yink)"><use href="#i-lock"/></svg></div>
+  </div>
+</section>
+
+<!-- ASIDE · their coin store TODAY, rebuilt word for word from the screenshot of the live iOS store -->
+<section class="scr" data-id="today" data-aside>
+  <div class="stop">
+    <img class="sband" src="assets/crop/store-band.png" alt="">
+    <div class="sbal"><span class="scbl">COIN BALANCE</span><span class="srow"><img class="cn" src="assets/crop/coin.png" alt=""><svg class="szero" viewBox="0 0 16 24"><rect x="2" y="2" width="12" height="20" rx="4.5" fill="none" stroke="currentColor" stroke-width="3.4"/><path d="M5 6.5l6 11" stroke="currentColor" stroke-width="3"/></svg><svg><use href="#i-chr"/></svg></span></div>
+  </div>
+  <div class="sbody">
+    <h2 class="sh2"><span class="fire">🔥</span>Trial Pack | Limited Time Offer</h2>
+    <div class="scard"><span class="stg g">95% OFF + NO ADS FOR 2 WEEKS</span><span class="sln"><img class="cn" src="assets/crop/coin.png" alt=""><b>136</b><i>+204 Free coins</i></span><span class="pf"><s>$19.99</s> $0.99</span></div>
+    <h2 class="sh2" style="margin-top:38px">Coin Packs</h2>
+    <div class="spks">
+      <div class="spr"><span class="stg">100% BONUS + NO ADS FOR 1 DAY</span><span class="sln"><img class="cn" src="assets/crop/coin.png" alt=""><b>12</b><i>+12 Free coins</i></span><span class="po">$1.99</span></div>
+      <div class="spr"><span class="stg">120% BONUS + NO ADS FOR 1 DAY</span><span class="sln"><img class="cn" src="assets/crop/coin.png" alt=""><b>34</b><i>+42 Free coins</i></span><span class="po">$4.99</span></div>
+      <div class="spr"><span class="stg">150% BONUS + NO ADS FOR 1 WEEK</span><span class="sln"><img class="cn" src="assets/crop/coin.png" alt=""><b>68</b><i>+102 Free coins</i></span><span class="po">$9.99</span></div>
+      <div class="spr"><span class="stg">150% BONUS + NO ADS FOR 2 WEEKS</span><span class="sln"><img class="cn" src="assets/crop/coin.png" alt=""><b>110</b><i>+165 Free coins</i></span><span class="po">$15.99</span></div>
+      <div class="spr"><span class="stg">200% BONUS + NO ADS FOR 2 WEEKS</span><span class="po"></span></div>
+    </div>
+  </div>
+  <nav class="tbar">
+    <span class="tbi"><i style="--ic:url(assets/crop/tab-home.png)"></i><span>HOME</span></span>
+    <span class="tbi"><i style="--ic:url(assets/crop/tab-stage.png)"></i><span>STAGE</span></span>
+    <span class="tbi"><i style="--ic:url(assets/crop/tab-disc.png)"></i><span>DISCOVER</span></span>
+    <span class="tbi"><i style="--ic:url(assets/crop/tab-lib.png)"></i><span>LIBRARY</span></span>
+    <span class="tbi on"><i style="--ic:url(assets/crop/tab-store.png)"></i><span>STORE</span></span>
+  </nav>
+</section>
+<!-- SCREENS:END -->
+
+      </div></div>
+      <div class="au-pn" id="panel" aria-live="polite"></div>
+    </div>
+    <p class="au-hint">Close the unlock sheet with ✕ to see idea 5.</p>
+    <!-- shown when CONTENT.liveUrl is set: assets/qr-app.png = qr.swift "<liveUrl>?app" -->
+    <div class="au-qr" id="qrCard" hidden><img src="assets/qr-app.png" alt="QR code that opens the prototype full screen"><div><b>Try it on your phone</b><p>Scan to open the prototype full screen, the way a new user would see it.</p></div></div>
+    <div class="au-mobw" id="qrMob" hidden><a class="au-btn" href="?app">Open it full screen</a></div>
+  </div>
+</section>
+
+<!-- the paywall TODAY vs PROPOSED — built from CONTENT.compare (stills: assets/hero/<today>.png, <proposed>.png) -->
+<section class="au-sec" id="compare" hidden><div class="au-wrap" id="cmpBody"></div></section>
+
+<footer class="au-foot" id="sources">
+  <div class="au-wrap">
+    <details id="srcDetails">
+      <summary>Where the numbers come from</summary>
+      <div class="au-srcs" id="srcBody"></div>
+    </details>
+    <p class="au-fine" id="fine"></p>
+    <div class="au-cta-line">
+      <p>Every screen here can be built and A/B tested in Adapty’s Flow Builder, with no app release.</p>
+      <a class="au-btn" href="https://adapty.io/flow-paywall-builder/" target="_blank" rel="noopener">About Flow Builder</a>
+    </div>
+  </div>
+</footer>
+
+<!-- extras: video dialog (CONTENT.video), ?app bar, ?tour overlay (CONTENT.tour) -->
+<dialog class="au-vid" id="vid" aria-label="Walkthrough video">
+  <div class="au-vid-in"><video id="vidEl" controls muted playsinline preload="none"></video></div>
+  <div class="au-vid-bar"><a id="vidDl" download>Download the MP4</a><button type="button" class="au-vid-x" id="vidX">Close</button></div>
+</dialog>
+<div class="au-scrim" id="abScrim"></div>
+<div class="au-appbar" id="appbar">
+  <button type="button" class="au-ab-why" id="abWhy"><i></i><span id="abT"></span><em>Why ↑</em></button>
+  <div class="au-lsw" id="abLang" role="group" aria-label="Language"></div>
+</div>
+<div class="au-tour" aria-hidden="true">
+  <div class="au-tb"><img src="assets/brand/appstore-icon.jpg" alt="">Growth Audit <small>· Pocket FM</small></div>
+  <div class="au-tby">Prepared by Adapty</div>
+  <div class="au-tcap" id="tCap"></div>
+  <div class="au-ttap" id="tTap"></div>
+  <div class="au-tprog"><i id="tProg"></i></div>
+  <div class="au-tintro" id="tIntro"></div>
+  <div class="au-tend" id="tEnd"></div>
+</div>
+
+<!-- CONTENT — all the audit's words and numbers, as data. Schema (brand-check enforces it):
+     ideas  : 3–5 rows, ranked (the audit is five ideas, never fifteen). screen = the screen that shows it.
+     panel  : one entry per screen. idea = its number in ideas (1-based) or 0 for a context screen.
+              why on an idea screen reads "<b>Try</b> X, <b>because</b> Y." in ≤ 45 words; iv = its range.
+              why on a context screen is one line saying what it sets up.
+     hero   : three screen ids shown as stills in the hero — run hero-stills.sh after the screens are done.
+     outcome: combined "up to" numbers, PS-deck style, never above the ceiling of the per-idea ranges.
+     sources: public facts only — App Store, their site, their screens. No sales research on this page.
+     EXTRAS (each one hides itself when left empty):
+     langs  : [{"code":"en","name":"English"},{"code":"es","name":"Español · Spain prices"}] — first = the markup's language
+     i18n   : {"es": {"<data-t key>": "text with {tokens}"}} — every data-t key, for every language after the first
+     prices : {"es": {"yr": "39,99 €", …}} — {tokens} in i18n strings; that storefront's real IAP prices
+     labelsI18n: {"es": {"goal": {"a": "…"}}} — C.labels per language (data-bind="label:…")
+     liveUrl: final Pages URL (QR card + video end card); the QR file encodes liveUrl + "?app"
+     video / poster: "assets/walkthrough.mp4" / "assets/walkthrough-poster.jpg" (record-video.sh)
+     compare: {today, proposed, kicker, title, sub, todayCap, rows:[{h, idea, was, now}], kept} — today = a data-aside screen
+     tour   : {segments:[{id, d, st, tap:[selector-in-screen, ms], pop, reveal, end}], captions:{id:{n|k, t, l, o, ol}},
+              introLede, endTitle} — ~30 s total; the last segment has end:true (the end card) -->
+<script type="application/json" id="content">
+{
+ "app": "Pocket FM",
+ "state": {
+  "pack": "trial"
+ },
+ "labels": {},
+ "chips": {
+  "home": "Home",
+  "play": "Episode 1",
+  "cliff": "Cliffhanger",
+  "unlock": "Unlock",
+  "offer": "On close",
+  "store": "Store",
+  "done": "Episode 9"
+ },
+ "hero": [
+  "home",
+  "unlock",
+  "store"
+ ],
+ "outcome": {
+  "cr": "+20%",
+  "arpu": "+10%"
+ },
+ "ideas": [
+  {
+   "screen": "home",
+   "title": "Open on the show from their trailer",
+   "what": "US reviewers say they downloaded for one story they saw on Facebook, TikTok or YouTube. Open Home on that show, set per ad segment, with Episode 1 one tap away, so a new listener starts inside <i>My Vampire System</i> instead of browsing genres.",
+   "impact": "+10–20%",
+   "il": "CR to first purchase"
+  },
+  {
+   "screen": "unlock",
+   "title": "Lead the first unlock with your $0.99 Trial Pack",
+   "what": "Your Trial Pack is 340 coins for $0.99: about 37 episodes at the 9 coins an episode your reviewers quote. Put it first and pre-selected on the unlock sheet, said in episodes, and drop the crossed-out $19.99.",
+   "impact": "+10–15%",
+   "il": "CR to first purchase"
+  },
+  {
+   "screen": "cliff",
+   "title": "Ask at the cliffhanger, inside the player",
+   "what": "When Episode 8 ends, raise Episode 9 in the player itself: its title, “continues right where E8 ends”, and one red button for 9 coins. The ask names the story they are in, not the store.",
+   "impact": "+5–10%",
+   "il": "CR to first purchase"
+  },
+  {
+   "screen": "store",
+   "title": "Price packs in episodes, and recommend one",
+   "what": "Your tags say <code>150% BONUS</code>; listeners count in episodes. Say <code>≈ 18 EPISODES</code>, mark the $9.99 pack Recommended (it carries them from Episode 9 to 26), and put 4.7 from 273K ratings beside Coin Packs.",
+   "impact": "+5–10%",
+   "il": "ARPPU"
+  },
+  {
+   "screen": "offer",
+   "title": "Catch the people who close it with your ad packs",
+   "what": "Someone who closes the unlock sheet has said no to paying, not to the story. Offer your own ad packs next: 7 ads for 10 coins, enough for Episode 9, so they reach the next cliffhanger and the next chance to buy.",
+   "impact": "+3–8%",
+   "il": "CR to first purchase"
+  }
+ ],
+ "panel": {
+  "home": {
+   "idea": 1,
+   "t": "Open on the show from their trailer",
+   "why": "<b>Try</b> opening Home on the show from the trailer they watched, per ad segment, with Episode 1 one tap away, <b>because</b> the trailer already said what they want, and every minute spent browsing is a minute further from the cliffhanger where they pay.",
+   "iv": "CR +10–20%",
+   "il": "to first purchase",
+   "also": "Your reviewers describe exactly this: downloading for one story seen on Facebook, TikTok or YouTube."
+  },
+  "play": {
+   "idea": 0,
+   "t": "Episode 1, free",
+   "why": "Free episodes play exactly as they do today. Skip ahead with ▶| to the end of Episode 8."
+  },
+  "cliff": {
+   "idea": 3,
+   "t": "Ask at the cliffhanger, inside the player",
+   "why": "<b>Try</b> raising Episode 9 inside the player the moment Episode 8 ends, with its title and its price, 9 coins, <b>because</b> curiosity peaks right there, and the ask should name the story they are in, not the store.",
+   "iv": "CR +5–10%",
+   "il": "to first purchase",
+   "also": "Episode 9 as the first locked episode is a stand-in; how many are free varies by show."
+  },
+  "unlock": {
+   "idea": 2,
+   "t": "Lead with your $0.99 Trial Pack",
+   "why": "<b>Try</b> your Trial Pack first and pre-selected on the unlock sheet, as “≈ 37 episodes” for $0.99, without the $19.99 strikethrough, <b>because</b> the first purchase is the hardest one, and a small honest price at the cliffhanger removes the reason to wait.",
+   "iv": "CR +10–15%",
+   "il": "to first purchase",
+   "also": "Episode counts use 9 coins an episode, the price your US reviewers quote most. Close with ✕ to see idea 5."
+  },
+  "offer": {
+   "idea": 5,
+   "t": "Catch the people who close it",
+   "why": "<b>Try</b> your own ad packs when someone closes the unlock sheet, 7 ads for 10 coins, enough for Episode 9, <b>because</b> a listener who keeps listening reaches the next cliffhanger, and the next chance to buy, instead of leaving.",
+   "iv": "CR +3–8%",
+   "il": "to first purchase, over the first week",
+   "also": "A different archetype from the sheet before it: earn, not buy. No countdown, no crossed-out price."
+  },
+  "store": {
+   "idea": 4,
+   "t": "Price packs in episodes, recommend one",
+   "why": "<b>Try</b> “≈ 18 episodes” in place of “150% bonus”, the $9.99 pack marked Recommended, and your 4.7 rating beside Coin Packs, <b>because</b> listeners count in episodes, and one clear pick lifts the size of the pack they choose.",
+   "iv": "ARPPU +5–10%",
+   "il": "per paying listener",
+   "also": "Header art, tags, free-coin counts, pill buttons and tab bar are yours, unchanged."
+  },
+  "done": {
+   "idea": 0,
+   "t": "Episode 9 plays",
+   "why": "The first purchase is done: the moment these five ideas are built to bring forward."
+  }
+ },
+ "langs": [],
+ "i18n": {},
+ "prices": {},
+ "labelsI18n": {},
+ "liveUrl": "https://eddieatadapty.github.io/pocketfm-flow-rebuild-v2/",
+ "video": "assets/walkthrough.mp4",
+ "poster": "assets/walkthrough-poster.jpg",
+ "compare": {
+  "today": "today",
+  "proposed": "store",
+  "kicker": "The coin store, side by side",
+  "title": "Today and proposed.",
+  "sub": "Same store, same packs. Five things change.",
+  "todayCap": "rebuilt from your live iOS store",
+  "rows": [
+   {
+    "h": "The Trial Pack price",
+    "idea": 2,
+    "was": "$19.99 crossed out, then $0.99, under “95% OFF”",
+    "now": "$0.99 on its own, and first on the unlock sheet"
+   },
+   {
+    "h": "What a pack buys",
+    "idea": 4,
+    "was": "Bonus percentages: “150% BONUS”",
+    "now": "Episodes: “≈ 18 EPISODES”, at about 9 coins each"
+   },
+   {
+    "h": "Which pack to pick",
+    "idea": 4,
+    "was": "Five equal rows, nothing marked",
+    "now": "$9.99 marked Recommended: Episodes 9 to 26"
+   },
+   {
+    "h": "Proof",
+    "idea": 4,
+    "was": "None on the screen",
+    "now": "★ 4.7 · 273K ratings beside Coin Packs"
+   },
+   {
+    "h": "When they say no",
+    "idea": 5,
+    "was": "Not visible in your screens",
+    "now": "Your ad packs: 7 ads for 10 coins, enough for Episode 9"
+   }
+  ],
+  "kept": "Kept as they are: your header art, coin balance, Trial Pack heading, tag style, free-coin counts, pill buttons and tab bar."
+ },
+ "tour": {
+  "introLede": "Five ideas to turn more new listeners into first-time coin buyers. <span>Built into your own app.</span>",
+  "endTitle": "Five ideas, built into your own app.",
+  "segments": [
+   {
+    "id": "home",
+    "d": 3600,
+    "tap": [
+     ".hplay",
+     2700
+    ]
+   },
+   {
+    "id": "play",
+    "d": 2800,
+    "tap": [
+     ".pskip",
+     2000
+    ]
+   },
+   {
+    "id": "cliff",
+    "d": 3400,
+    "pop": ".nxc",
+    "tap": [
+     ".nxb",
+     2600
+    ]
+   },
+   {
+    "id": "unlock",
+    "d": 3800,
+    "tap": [
+     ".xr",
+     3000
+    ]
+   },
+   {
+    "id": "offer",
+    "d": 3400,
+    "tap": [
+     ".ofm",
+     2600
+    ]
+   },
+   {
+    "id": "store",
+    "d": 4000,
+    "tap": [
+     ".rec .po",
+     3200
+    ]
+   },
+   {
+    "id": "done",
+    "d": 2600,
+    "st": {
+     "pack": "p9"
+    },
+    "pop": ".toast"
+   },
+   {
+    "id": "done",
+    "d": 4400,
+    "end": true
+   }
+  ],
+  "captions": {
+   "home": {
+    "n": 1,
+    "t": "Open on the show from their trailer",
+    "l": "Episode 1 of the story they came for, one tap away.",
+    "o": "CR +10–20%",
+    "ol": "to first purchase"
+   },
+   "play": {
+    "k": "Context",
+    "t": "Episode 1, free",
+    "l": "Free episodes play as they do today."
+   },
+   "cliff": {
+    "n": 3,
+    "t": "Ask at the cliffhanger",
+    "l": "Episode 9, by name, inside the player.",
+    "o": "CR +5–10%",
+    "ol": "to first purchase"
+   },
+   "unlock": {
+    "n": 2,
+    "t": "Lead with the $0.99 Trial Pack",
+    "l": "About 37 episodes. No crossed-out $19.99.",
+    "o": "CR +10–15%",
+    "ol": "to first purchase"
+   },
+   "offer": {
+    "n": 5,
+    "t": "Catch the people who close it",
+    "l": "7 ads for 10 coins: Episode 9, free.",
+    "o": "CR +3–8%",
+    "ol": "to first purchase"
+   },
+   "store": {
+    "n": 4,
+    "t": "Packs in episodes, one recommended",
+    "l": "≈ 18 episodes, not “150% bonus”. Rating beside it.",
+    "o": "ARPPU +5–10%",
+    "ol": "per paying listener"
+   },
+   "done": {
+    "k": "Context",
+    "t": "Episode 9 plays",
+    "l": "The first purchase: the step these ideas move."
+   }
+  }
+ },
+ "grounding": "Impact ranges are Adapty’s expected effect from teardowns and A/B tests across 30,000+ apps, not measured lift for Pocket FM. They overlap, so they don’t add up.",
+ "sources": [
+  {
+   "group": "Prices",
+   "items": [
+    {
+     "dt": "$0.99 · $1.99 · $4.99 · $9.99 · $15.99",
+     "dd": "$0.99, $1.99, $4.99, $9.99 (and $19.99) are the In-App Purchases on your <a href=\"https://apps.apple.com/us/app/pocket-fm-audio-dramas/id1538433480\" target=\"_blank\" rel=\"noopener\">US App Store listing</a> (“Buy coins worth $…”), read 22 Oct 2026. $15.99 and every coin count (136 +204, 12 +12, 34 +42, 68 +102, 110 +165) are from a screenshot of your live iOS store."
+    },
+    {
+     "dt": "9 coins an episode (stand-in)",
+     "dd": "Your per-episode price is not public. 9 coins is the price US App Store reviews quote most (October 2026, e.g. “9 coins to unlock one episode”); some quote 11 to 16 for later episodes. Every “≈ N episodes” is coins ÷ 9, rounded down: 340 → 37, 24 → 2, 76 → 8, 170 → 18, 275 → 30."
+    },
+    {
+     "dt": "Ad packs",
+     "dd": "1 ad → 1 coin, 7 ads → 10 coins (43% bonus), 13 ads → 20 coins (54% bonus): a second screenshot of your live iOS store."
+    },
+    {
+     "dt": "Not used",
+     "dd": "The $19.99 pack’s coin count (its row is cut off in the screenshot, so it stays cut off here)."
+    }
+   ]
+  },
+  {
+   "group": "Proof",
+   "items": [
+    {
+     "dt": "4.7 · 273K ratings",
+     "dd": "US App Store: 4.66 from 272,567 ratings, 22 Oct 2026."
+    },
+    {
+     "dt": "Trailers",
+     "dd": "Public US App Store reviews (October 2026) describe downloading for a story first seen on Facebook, TikTok or YouTube."
+    }
+   ]
+  },
+  {
+   "group": "Features and copy",
+   "items": [
+    {
+     "dt": "Coin store",
+     "dd": "Rebuilt word for word from screenshots of your live iOS store: “COIN BALANCE”, “Trial Pack | Limited Time Offer”, “Coin Packs”, the tags and the tab bar (HOME · STAGE · DISCOVER · LIBRARY · STORE)."
+    },
+    {
+     "dt": "Unlock sheet",
+     "dd": "“Buy coins to unlock episodes”, the radio cards, “See more packs”, “Current balance” and “Buy now” follow a Pocket FM unlock sheet you shared (Android); the packs and prices on it are your US iOS ones."
+    },
+    {
+     "dt": "Show and episodes",
+     "dd": "<i>My Vampire System</i>, “E1 - Just an Old Book”, 01/2296 and E5 to E11 (“Fate”, “What system?”, “New Quest”) with their lengths are from your US iPhone and iPad App Store screenshots. Episode 9 as the first locked one is illustrative."
+    }
+   ]
+  },
+  {
+   "group": "Design",
+   "items": [
+    {
+     "dt": "Colours",
+     "dd": "Sampled from screenshots of your live iOS store: background #090909, card #1b1b1b, pill #333333, outline #898989, tag #1d1d1d on #bbbbbb, Trial tag #02fdaa, free coins #ecefbc, ad tag #48004d, STORE glow #642031. Unlock sheet #15151e, cards #232631, bonus tag #2b2301, Buy now #e5194b from the unlock sheet you shared. Player red #f9303e from your App Store screenshots."
+    },
+    {
+     "dt": "Type",
+     "dd": "Albert Sans and Share Tech, the closest Google families we found to your app’s sans and its narrow pixel-style label face (compared letter by letter against your store screenshot)."
+    },
+    {
+     "dt": "Art",
+     "dd": "Header art, coin, tab icons and coin-flip art are cut from screenshots of your live iOS store: the balance text was erased from the header art and the icons’ backgrounds removed. Covers are from your App Store screenshots; the large <i>My Vampire System</i> cover is cut from iPad screenshot 2 and straightened. Other icons redrawn."
+    }
+   ]
+  },
+  {
+   "group": "What we couldn’t see",
+   "items": [
+    {
+     "dt": "Your first session after an ad",
+     "dd": "Not in ScreensDesign’s library and no recording, so where a new listener lands today is not something we have seen."
+    },
+    {
+     "dt": "Your iOS unlock moment",
+     "dd": "We have your iOS store, not what the US app shows when an episode locks. The unlock sheet here follows the Android one you shared."
+    },
+    {
+     "dt": "Free episodes and coin prices per show",
+     "dd": "Both vary; Episode 9 and 9 coins are stand-ins."
+    },
+    {
+     "dt": "A daily pass in the US?",
+     "dd": "We have seen a “Daily Episodes Pass” only on Android in India, not in your US In-App Purchases, so it is not on these screens. Is a pass something you would want to test in the US?"
+    }
+   ]
+  }
+ ]
+}
+</script>
+
+<script>
+/* per-app hooks go here: window.onSync = function(S){…}; window.onEnter = function(id, S){…}; window.onLang = function(lang){…};
+   Globals available: S (S.lang = current language), C, cur, ORDER, scr, go(), back(), jump(), sync(), setLang(), fillP(str, lang),
+   SHOT (screenshot/tour run), HERO (hero-still run). Per-language dynamic text: read S.lang in onSync. */
+/* Pocket FM hooks. Every asset the hooks pick is listed literally here (publish-gh scans the page for paths). */
+var COVERS = {
+  lg:  {en: 'assets/crop/cover-mvs-lg.jpg'},
+  mvs: {en: 'assets/crop/cover-mvs.png'}
+};
+/* coins left after Episode 9 (9 coins, the stand-in price): pack coins incl. free coins − 9 */
+var LEFT = {trial: 331, p2: 15, p4: 67, p9: 161, p15: 266, ads: 1, ads1: 1, ads20: 11};
+function lng(){ return S.lang || 'en'; }
+window.onSync = function(S){
+  var l = lng();
+  document.querySelectorAll('.phone [data-cover]').forEach(function(img){
+    var c = COVERS[img.dataset.cover] || COVERS.lg, src = c[l] || c.en;
+    if (img.getAttribute('src') !== src) img.setAttribute('src', src);
+  });
+  document.querySelectorAll('.phone .left').forEach(function(e){ e.textContent = LEFT[S.pack] != null ? LEFT[S.pack] : 331; });
+};
+/* the outcome labels for a pay-per-episode app: CR to first purchase, ARPPU */
+document.addEventListener('DOMContentLoaded', function(){
+  document.querySelectorAll('#bandNums span, .au-te-n span').forEach(function(s){
+    if (s.textContent === 'CR to purchase') s.textContent = 'CR to first purchase';
+    if (s.textContent === 'ARPU') s.textContent = 'ARPPU';
+  });
+});
+</script>
+<script>
+/* ============ engine — generic, do not fork per app ============ */
+var C = JSON.parse(document.getElementById('content').textContent);
+var S = C.state, scr = {}, ORDER = [], hist = [], cur = null, Q = location.search;
+var SHOT = /[?&](shot|phone|tour)\b/.test(Q), HERO = /[?&]hero\b/.test(Q);
+/* a screen with data-aside (e.g. the paywall TODAY for the side-by-side) renders for stills but is not part of the flow */
+document.querySelectorAll('.scr').forEach(function(s){ scr[s.dataset.id] = s; if (!s.hasAttribute('data-aside')) ORDER.push(s.dataset.id); });
+if (/[?&]shot\b/.test(Q)) document.documentElement.classList.add('shot');
+if (/[?&]phone\b/.test(Q)) document.documentElement.classList.add('shot', 'phoneonly');
+if (/[?&]clear\b/.test(Q)) document.documentElement.classList.add('clear');
+var IDEAS = (C.ideas || []).length;
+
+/* ---- languages: markup is the first language; C.i18n[lang][data-t key] the others; {tokens} from C.prices[lang] ---- */
+var LANGS = C.langs || [], BASE = LANGS.length ? LANGS[0].code : 'en', LANG_DONE = BASE, BASE_LABELS = JSON.parse(JSON.stringify(C.labels || {}));
+if (!S.lang) S.lang = BASE;
+function fillP(s, l){ var P = (C.prices || {})[l] || {}; return String(s).replace(/\{(\w+)\}/g, function(m, k){ return k in P ? P[k] : m; }); }
+function applyLang(){
+  var l = S.lang || BASE; if (l === LANG_DONE) return;
+  var T = (C.i18n || {})[l] || {};
+  document.querySelectorAll('.phone [data-t]').forEach(function(el){
+    if (el._base == null) el._base = el.innerHTML;
+    el.innerHTML = l === BASE || T[el.dataset.t] == null ? el._base : fillP(T[el.dataset.t], l);
+  });
+  C.labels = JSON.parse(JSON.stringify(BASE_LABELS));
+  var LL = (C.labelsI18n || {})[l] || {}; Object.keys(LL).forEach(function(k){ C.labels[k] = LL[k]; });
+  LANG_DONE = l;
+}
+function setLang(l){
+  if (!LANGS.some(function(x){ return x.code === l; })) return;
+  S.lang = l; sync();
+  document.querySelectorAll('[data-setlang]').forEach(function(b){ b.classList.toggle('on', b.dataset.setlang === l); });
+  if (window.onLang) window.onLang(l);
+}
+
+function lab(key){ var v = S[key]; var L = C.labels[key]; if (Array.isArray(v)) return v.map(function(x){ return L && L[x] || x; }).join(', '); return (L && L[v]) || v; }
+function sync(){
+  applyLang();
+  document.querySelectorAll('[data-bind]').forEach(function(el){
+    var b = el.dataset.bind, m = b.split(':');
+    el.textContent = m[0] === 'label' ? lab(m[1]) : m[0] === 'count' ? (S[m[1]] || []).length : (S[b] == null ? '' : S[b]);
+  });
+  document.querySelectorAll('[data-pick]').forEach(function(el){ var p = el.dataset.pick.split(':'); el.classList.toggle('on', S[p[0]] === p[1]); });
+  document.querySelectorAll('[data-toggle]').forEach(function(el){ var p = el.dataset.toggle.split(':'); el.classList.toggle('on', (S[p[0]] || []).indexOf(p[1]) > -1); });
+  document.querySelectorAll('[data-requires]').forEach(function(el){ el.disabled = !(S[el.dataset.requires] || []).length; });
+  document.querySelectorAll('[data-show]').forEach(function(el){ var p = el.dataset.show.split(':'); el.style.display = String(S[p[0]]) === p[1] ? '' : 'none'; });
+  if (window.onSync) window.onSync(S);
+}
+function show(id, dir){
+  var from = scr[cur], to = scr[id]; if (!to || id === cur) return;
+  var sheet = to.classList.contains('sheet');
+  if (from){
+    from.classList.remove('is-active');
+    if (sheet) from.classList.add('under');                                   /* a sheet slides up over the screen that opened it */
+    else if (dir === 'fwd' && !from.classList.contains('sheet')) from.classList.add('is-past');
+  }
+  if (!sheet) Object.keys(scr).forEach(function(k){ var u = scr[k]; if (u !== to && u.classList.contains('under')) { u.classList.remove('under'); if (dir === 'fwd') u.classList.add('is-past'); } });
+  to.classList.remove('is-past', 'under'); to.classList.add('is-active'); cur = id;
+  paint(); if (window.onEnter) window.onEnter(id, S);
+}
+function go(id){ if (cur) hist.push(cur); show(id, 'fwd'); }
+function back(){ if (hist.length) { var p = hist.pop(); scr[cur].classList.remove('is-active'); show(p, 'back'); } }
+function jump(id){
+  Object.keys(scr).forEach(function(k){ scr[k].classList.add('nofx'); scr[k].classList.remove('is-active', 'is-past', 'under'); });
+  var i = ORDER.indexOf(id); hist = ORDER.slice(0, i < 0 ? 0 : i); cur = null;
+  ORDER.slice(0, i).forEach(function(k){ if (!scr[k].classList.contains('sheet')) scr[k].classList.add('is-past'); });
+  if (scr[id] && scr[id].classList.contains('sheet')) {                        /* jumping to a sheet: its opener stays visible under it */
+    for (var j = i - 1; j >= 0; j--) if (!scr[ORDER[j]].classList.contains('sheet')) { scr[ORDER[j]].classList.remove('is-past'); scr[ORDER[j]].classList.add('under'); break; }
+  }
+  show(id, 'jump');
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){ Object.keys(scr).forEach(function(k){ scr[k].classList.remove('nofx'); }); }); });
+}
+function stepBy(d){ var i = ORDER.indexOf(cur) + d; if (i >= 0 && i < ORDER.length) jump(ORDER[i]); }
+function jumpTo(id){
+  var p = document.getElementById('prototype');
+  if (p && !document.documentElement.classList.contains('appmode')) p.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start'});
+  jump(id);
+}
+function paint(){
+  sync();
+  var c = document.getElementById('chips');
+  if (!c.childElementCount) ORDER.forEach(function(id){
+    var p = C.panel[id] || {}, b = document.createElement('button');
+    b.className = 'au-chip'; b.type = 'button'; b.dataset.id = id; b.setAttribute('role', 'tab');
+    b.innerHTML = (p.idea ? '<i>' + p.idea + '</i>' : '') + ((C.chips && C.chips[id]) || id);
+    b.onclick = function(){ jump(id); };
+    c.appendChild(b);
+  });
+  c.querySelectorAll('.au-chip').forEach(function(b){ var on = b.dataset.id === cur; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); });
+  var d = C.panel[cur] || {t: cur, why: ''}, n = ORDER.indexOf(cur) + 1;
+  document.getElementById('panel').innerHTML =
+    (d.idea ? '<div class="au-pn-k"><i></i>Idea ' + d.idea + ' of ' + IDEAS + '</div>' : '<div class="au-pn-k au-ctx"><i></i>Context</div>') +
+    '<h3 class="au-pn-t">' + d.t + '</h3><p class="au-pn-h">' + d.why + '</p>' +
+    (d.iv ? '<div class="au-pn-o"><div class="au-lab">Potential outcome · based on Adapty data</div><div class="au-val"><mark>' + d.iv + '</mark></div><div class="au-sub">' + (d.il || '') + '</div></div>' : '') +
+    (d.also ? '<p class="au-pn-a">' + d.also + '</p>' : '') +
+    '<div class="au-pn-nav"><button type="button" onclick="stepBy(-1)"' + (n <= 1 ? ' disabled' : '') + '>‹ Previous</button><span>Screen ' + n + ' of ' + ORDER.length + '</span><button type="button" onclick="stepBy(1)"' + (n === ORDER.length ? ' disabled' : '') + '>Next ›</button></div>';
+  var ab = document.getElementById('abT'); if (ab) ab.textContent = (d.idea ? 'Idea ' + d.idea + ' of ' + IDEAS + ' · ' : '') + (d.t || '');
+}
+document.addEventListener('click', function(e){
+  var j = e.target.closest('[data-jumpto]'); if (j){ e.preventDefault(); jumpTo(j.dataset.jumpto); return; }
+  var L = e.target.closest('[data-setlang]'); if (L){ setLang(L.dataset.setlang); return; }
+  if (e.target.closest('[data-langtoggle]') && LANGS.length > 1){ var k = LANGS.findIndex(function(x){ return x.code === S.lang; }); setLang(LANGS[(k + 1) % LANGS.length].code); return; }
+  var el = e.target.closest('[data-go],[data-back],[data-pick],[data-toggle]'); if (!el) return;
+  if (el.dataset.pick){ var p = el.dataset.pick.split(':'); S[p[0]] = p[1]; sync(); if (el.dataset.advance) setTimeout(function(){ go(el.dataset.advance); }, 170); return; }
+  if (el.dataset.toggle){ var q = el.dataset.toggle.split(':'), a = S[q[0]] = S[q[0]] || [], i = a.indexOf(q[1]); if (i > -1) a.splice(i, 1); else a.push(q[1]); sync(); return; }
+  if ('back' in el.dataset) return back();
+  go(el.dataset.go);
+});
+document.querySelectorAll('[data-input]').forEach(function(inp){
+  inp.value = S[inp.dataset.input] || ''; inp.addEventListener('input', function(){ S[inp.dataset.input] = inp.value.trim() || 'there'; sync(); });
+});
+function $(id){ return document.getElementById(id); }
+
+/* hero stills, shortlist, outcome, sources — from CONTENT */
+$('heroPhones').innerHTML = (C.hero || []).map(function(id, i){
+  var pos = ['l', 'c', 'r'][i] || 'r', t = (C.chips && C.chips[id]) || id;
+  return '<button class="au-hp au-' + pos + '" data-jumpto="' + id + '" aria-label="Open ' + t + '"><img src="assets/hero/' + id + '.png" alt=""></button>';
+}).join('');
+$('ideaList').innerHTML = (C.ideas || []).map(function(r, i){
+  return '<article class="au-idea"><div class="au-num">0' + (i + 1) + '</div><div><h3>' + r.title + '</h3><p>' + r.what + '</p>' +
+    '<button type="button" class="au-lnk" data-jumpto="' + r.screen + '">See it on the screen</button></div>' +
+    '<div class="au-imp"><div class="au-v"><mark>' + r.impact + '</mark></div><div class="au-l">' + r.il + '</div></div></article>';
+}).join('');
+var O = C.outcome || {};
+$('bandNums').innerHTML =
+  (O.cr ? '<div><small>up to</small><b>' + O.cr + '</b><span>CR to purchase</span></div>' : '') +
+  (O.arpu ? '<div><small>up to</small><b>' + O.arpu + '</b><span>ARPU</span></div>' : '');
+$('bandFn').textContent = C.grounding;
+$('fine').textContent = C.grounding + ' Prepared by Adapty.';
+$('srcBody').innerHTML = C.sources.map(function(g){
+  return '<div><h4>' + g.group + '</h4><dl>' + g.items.map(function(it){ return '<dt>' + it.dt + '</dt><dd>' + it.dd + '</dd>'; }).join('') + '</dl></div>';
+}).join('');
+function openSrc(){ var d = $('srcDetails'); d.open = true; d.scrollIntoView({block: 'start'}); }
+
+/* ---- extras: language control, the paywall side by side, QR / phone view, the video ---- */
+if (LANGS.length > 1) {
+  $('langRow').hidden = false;
+  var lb = LANGS.map(function(x){ return '<button type="button" data-setlang="' + x.code + '">' + x.name + '</button>'; }).join('');
+  $('langSw').innerHTML = lb;
+  $('abLang').innerHTML = LANGS.map(function(x){ return '<button type="button" data-setlang="' + x.code + '">' + x.code.toUpperCase() + '</button>'; }).join('');
+}
+var CM = C.compare;
+if (CM && scr[CM.today] && scr[CM.proposed]) {
+  $('compare').hidden = false; $('navCompare').hidden = false;
+  $('cmpBody').innerHTML = '<div class="au-ideas-h"><p class="au-kicker">' + (CM.kicker || 'The paywall, side by side') + '</p><h2 class="au-h2">' + (CM.title || 'Today and proposed.') + (CM.sub ? ' <span>' + CM.sub + '</span>' : '') + '</h2></div>' +
+    '<div class="au-cmp"><figure><img src="assets/hero/' + CM.today + '.png" alt="Your paywall today"><figcaption>Today <span>· ' + (CM.todayCap || 'rebuilt from your recording') + '</span></figcaption></figure>' +
+    '<ol class="au-chg">' + (CM.rows || []).map(function(r){
+      return '<li><h4>' + r.h + (r.idea ? ' <i>Idea ' + r.idea + '</i>' : '') + '</h4><span class="au-was"><em>Today</em>' + r.was + '</span><span class="au-now"><em>Proposed</em>' + r.now + '</span></li>';
+    }).join('') + '</ol>' +
+    '<figure><button type="button" class="au-cmp-go" data-jumpto="' + CM.proposed + '" aria-label="Open the proposed paywall"><img src="assets/hero/' + CM.proposed + '.png" alt="The proposed paywall"></button><figcaption>Proposed <span>· tap to try it</span></figcaption></figure></div>' +
+    (CM.kept ? '<p class="au-kept">' + CM.kept + '</p>' : '');
+}
+if (C.liveUrl) { $('qrCard').hidden = false; $('qrMob').hidden = false; }
+if (/[?&]app\b/.test(Q)) {
+  var H0 = document.documentElement; H0.classList.add('appmode');
+  var openP = function(o){ H0.classList.toggle('au-open', o); $('abWhy').querySelector('em').textContent = o ? 'Close ↓' : 'Why ↑'; };
+  $('abWhy').onclick = function(){ openP(!H0.classList.contains('au-open')); };
+  $('abScrim').onclick = function(){ openP(false); };
+}
+if (C.video) {
+  var dlg = $('vid'), vel = $('vidEl'); vel.src = C.video; if (C.poster) vel.poster = C.poster; $('vidDl').href = C.video;
+  $('heroVideo').hidden = false;
+  $('heroVideo').onclick = function(){ dlg.showModal(); vel.play().catch(function(){}); };
+  $('vidX').onclick = function(){ dlg.close(); };
+  dlg.addEventListener('close', function(){ vel.pause(); });
+  dlg.addEventListener('click', function(e){ if (e.target === dlg) dlg.close(); });
+}
+
+/* ---- ?tour: a deterministic walkthrough from C.tour — tourAt(ms) paints one frame; record-video.sh records it ---- */
+function tourInit(){
+  var T = C.tour, H = document.documentElement, TR = T.transition || 360;
+  H.classList.add('tourmode', 'shot'); document.body.classList.add('nofx');
+  var SEG = T.segments, START = [], STATE = [], UNDER = [], acc = 0, st = JSON.parse(JSON.stringify(C.state));
+  SEG.forEach(function(s, i){
+    START.push(acc); acc += s.d;
+    Object.keys(s.st || {}).forEach(function(k){ st[k] = s.st[k]; }); STATE.push(JSON.parse(JSON.stringify(st)));
+    var u = null; if (scr[s.id].classList.contains('sheet')) for (var j = i - 1; j >= 0; j--) if (!scr[SEG[j].id].classList.contains('sheet')) { u = SEG[j].id; break; }
+    UNDER.push(u);
+  });
+  var TOTAL = acc, capEl = $('tCap'), tap = $('tTap'), pressed = null, popped = [];
+  $('tIntro').innerHTML = '<p class="au-eyebrow"><i></i>' + document.querySelector('.au-top-hero .au-eyebrow').textContent + '</p><h1 class="au-display">' + C.app + '</h1>' +
+    '<p class="au-lede">' + (T.introLede || document.querySelector('.au-top-hero .au-lede').innerHTML) + '</p>';
+  $('tEnd').innerHTML = '<p class="au-eyebrow"><i></i>Growth Audit · ' + C.app + '</p><h2 class="au-te-h">' + (T.endTitle || 'Five ideas, built into your own onboarding.') + '</h2>' +
+    '<div class="au-te-n">' + (O.cr ? '<div><small>up to</small><b>' + O.cr + '</b><span>CR to purchase</span></div>' : '') + (O.arpu ? '<div><small>up to</small><b>' + O.arpu + '</b><span>ARPU</span></div>' : '') + '</div>' +
+    (C.liveUrl ? '<div class="au-te-q"><img src="assets/qr-app.png" alt=""><div><b>Try it on your phone</b><span>' + C.liveUrl.replace(/^https?:\/\//, '').replace(/\/$/, '') + '</span></div></div>' : '') +
+    '<p class="au-te-f">' + C.grounding + '</p>';
+  function ease(x){ return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
+  function easeBack(x){ var c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); }
+  function capHTML(c){
+    c = c || {k: '', t: '', l: ''};
+    return '<div class="au-tk' + (c.n ? '' : ' au-ctx') + '"><i></i>' + (c.n ? 'Idea ' + c.n + ' of ' + IDEAS : (c.k || 'Context')) + '</div><h2 class="au-tt">' + c.t + '</h2><p class="au-tl">' + (c.l || '') + '</p>' +
+      (c.o ? '<div class="au-to"><small>Potential outcome · based on Adapty data</small><b><mark>' + c.o + '</mark></b><span>' + (c.ol || '') + '</span></div>' : '');
+  }
+  function place(id, tf, z){ scr[id].style.transform = tf; scr[id].style.zIndex = z; }
+  window.TOUR_MS = TOTAL;
+  window.tourAt = function(ms){
+    ms = Math.max(0, Math.min(TOTAL - 1, ms));
+    var i = 0; while (i < SEG.length - 1 && ms >= START[i + 1]) i++;
+    var s = SEG[i], local = ms - START[i], prev = i > 0 ? SEG[i - 1] : null;
+    Object.keys(STATE[i]).forEach(function(k){ S[k] = STATE[i][k]; }); sync();
+    var moving = prev && prev.id !== s.id && local < TR, p = moving ? ease(local / TR) : 1;
+    Object.keys(scr).forEach(function(k){ scr[k].classList.remove('is-active', 'is-past', 'under'); place(k, 'translateX(100%)', 0); });
+    var B = scr[s.id];
+    if (moving) {
+      if (B.classList.contains('sheet')) { place(prev.id, 'none', 1); B.style.transform = 'translateY(' + (1 - p) * 100 + '%)'; }
+      else {
+        var slide = 'translateX(' + (-28 * p) + '%)'; place(prev.id, slide, 1); B.style.transform = 'translateX(' + (1 - p) * 100 + '%)';
+        if (UNDER[i - 1]) place(UNDER[i - 1], slide, 0);
+      }
+    } else B.style.transform = 'none';
+    B.style.zIndex = 2;
+    if (UNDER[i] && !moving) place(UNDER[i], 'none', 1);
+    /* optional reveal: s.pop scales an element in, s.reveal fades one in a beat later */
+    popped.forEach(function(e){ e.style.transform = ''; e.style.opacity = ''; }); popped = [];
+    var q = Math.max(0, Math.min(1, (local - 250) / 550));
+    if (s.pop) { var pe = B.querySelector(s.pop); if (pe) { pe.style.transform = 'scale(' + (.55 + .45 * easeBack(q)) + ')'; pe.style.opacity = Math.min(1, q * 1.6); popped.push(pe); } }
+    if (s.reveal) { var re = B.querySelector(s.reveal); if (re) { re.style.opacity = Math.max(0, Math.min(1, (local - 520) / 300)); popped.push(re); } }
+    /* caption crossfades at screen changes; waits for the intro, gives way to the end card */
+    var key = s.id, op = 1;
+    if (moving) { if (p < .5) { key = prev.id; op = 1 - p * 2; } else op = p * 2 - 1; }
+    if (capEl.dataset.k !== key) { capEl.innerHTML = capHTML(T.captions[key]); capEl.dataset.k = key; }
+    var io = ms < 1100 ? 1 : Math.max(0, 1 - (ms - 1100) / 300), eo = s.end ? Math.min(1, local / 350) : 0;
+    capEl.style.opacity = op * Math.max(0, Math.min(1, (ms - 1400) / 300)) * (1 - eo);
+    /* the finger: fades in, taps, ripples out. Selectors are scoped to the screen */
+    tap.style.opacity = 0; if (pressed) { pressed.style.opacity = ''; pressed = null; }
+    if (s.tap) {
+      var el = B.querySelector(s.tap[0]), dt = local - s.tap[1];
+      if (el && dt > -260 && dt < 420) {
+        var r = el.getBoundingClientRect();
+        tap.style.left = (r.left + r.width / 2) + 'px'; tap.style.top = (r.top + r.height / 2) + 'px';
+        if (dt < 0) { tap.style.opacity = (dt + 260) / 260 * .9; tap.style.transform = 'scale(1)'; }
+        else { tap.style.opacity = .9 * (1 - dt / 420); tap.style.transform = 'scale(' + (1 + dt / 420 * .9) + ')'; }
+        if (dt >= 0 && dt < 160) { el.style.opacity = .72; pressed = el; }
+      }
+    }
+    $('tIntro').style.opacity = T.intro === false ? 0 : io;
+    $('tEnd').style.opacity = eo;
+    $('tProg').style.width = (ms / TOTAL * 100) + '%';
+    cur = s.id;
+    return i;
+  };
+  var tm = /[?&]t=(\d+)/.exec(Q); tourAt(tm ? +tm[1] : 0);
+}
+
+/* boot: #<screen-id> deep-links a screen (shoot.sh / hero-stills.sh use it); ?lang=xx picks the language */
+(function(){
+  var lm = /[?&]lang=(\w+)/.exec(Q); if (lm) setLang(lm[1]); else setLang(S.lang);
+  var h = location.hash.slice(1);
+  jump(scr[h] ? h : ORDER[0]);
+  if (scr[h] && !SHOT && !document.documentElement.classList.contains('appmode')) setTimeout(function(){ $('prototype').scrollIntoView(); }, 0);
+  if (/[?&]tour\b/.test(Q) && C.tour) tourInit();
+})();
+</script>
+</body>
+</html>
